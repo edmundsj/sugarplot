@@ -20,7 +20,7 @@ jobs:
         echo "CONDA_PATH=$(echo $CONDA)" >> $CONDA_PATH
     - name: Echo conda environment variable
       run:
-        echo "${{ CONDA_PATH }}"
+        echo "${{ env.CONDA_PATH }}"
 
     - name: Cache Conda Packages
       id: cache-conda
