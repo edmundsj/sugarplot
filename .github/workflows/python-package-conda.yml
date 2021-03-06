@@ -15,9 +15,14 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Echo ANY ENVIRONMENT VARIABLE
+      run:
+        echo "${{ env.GITHUB_WORKFLOW }}"
+        echo "${CONDA}"
+
     - name: Set conda environment variable
       run: |
-        echo "CONDA_PATH=$(echo $CONDA)" >> $CONDA_PATH
+        echo "CONDA_PATH=$(echo $CONDA)" >> $env.CONDA_PATH
     - name: Echo conda environment variable
       run:
         echo "${{ env.CONDA_PATH }}"
