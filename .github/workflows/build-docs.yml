@@ -20,7 +20,12 @@ jobs:
         $CONDA/bin/conda env update --file environment.yml --name base
     - name: Build docs
       run: |
-        cd docs; make html; cd ..;
+         # Execute the document build with conda
+         $CONDA/bin/sphinx-build -M html ./docs/source ./docs;
+         # Move docs into root directory
+         mv ./docs/html/* ./docs; 
+         # Move buildinfo 
+         mv ./docs/html/.buildinfo ./docs;
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         # Optional but recommended
