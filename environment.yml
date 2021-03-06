@@ -16,7 +16,6 @@ dependencies:
   - pyvisa
   - scipy
   - sphinx
-  - sphinx-build
   - sphinx_rtd_theme
   - sphinxcontrib-jsmath
   - setuptools
