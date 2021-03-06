@@ -15,16 +15,19 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Echo conda path
+    - name: Set conda environment variable
       run: |
-        echo "${{ env.CONDA }}"
-        echo "${{ env }}"
+        echo "CONDA_PATH=$(echo $CONDA)" >> $CONDA_PATH
+    - name: Echo conda environment variable
+      run:
+        echo "${{ env.CONDA_PATH}}"
+        echo "${{ CONDA_PATH }}"
 
     - name: Cache Conda Packages
       id: cache-conda
       uses: actions/cache@v2
       with:
-        path: ${{env.CONDA}}
+        path: ${{env.CONDA_PATH}}
         key: ${{ runner.os }}-conda
 
     - name: Install dependencies
