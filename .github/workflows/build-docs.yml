@@ -20,6 +20,9 @@ jobs:
         $CONDA/bin/conda env update --file environment.yml --name base
     - name: Build docs
       run: |
+         # Remove old _sources and _static directory
+         rm -rf ./docs/_sources;
+         rm -rf ./docs/_static;
          # Execute the document build with conda
          $CONDA/bin/sphinx-build -M html ./docs/source ./docs;
          # Move docs into root directory
