@@ -16,21 +16,14 @@ jobs:
         python-version: 3.8
 
     - name: Set env
-      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+      run: echo "CONDA_PATH=$(echo $CONDA)" >> $GITHUB_ENV
     - name: Test
-      run: echo $GITHUB_SHA_SHORT
+      run: echo $CONDA_PATH
 
     - name: Echo ANY ENVIRONMENT VARIABLE
       run:
         echo "${{ env.GITHUB_WORKFLOW }}"
         echo "${CONDA}" # Shell environment variable
-
-    - name: Set conda environment variable
-      run: |
-        echo "CONDA_PATH=$(echo $CONDA)" >> $env.CONDA_PATH
-    - name: Echo conda environment variable
-      run:
-        echo "${{ env.CONDA_PATH }}"
 
     - name: Cache Conda Packages
       id: cache-conda
