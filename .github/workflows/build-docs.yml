@@ -41,7 +41,7 @@ jobs:
 
         # Optional options appended to `git-commit`
         # See https://git-scm.com/docs/git-commit for a list of available options
-        commit_options: '-f'
+        #commit_options: 'BLAHBLAH'
 
         # Optional glob pattern of files which should be added to the commit
         # Defaults to all (.)
