@@ -16,10 +16,10 @@ jobs:
         python-version: 3.8
 
     - name: Cache Conda Packages
-      id: cache-primes
+      id: cache-conda
       uses: actions/cache@v2
       with:
-        path: $CONDA
+        path: ${{env.CONDA}}
         key: ${{ runner.os }}-conda
 
     - name: Install dependencies
