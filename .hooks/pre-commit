@@ -2,7 +2,7 @@
 import os
 import sys
 
-os.system('cd docs/; make html; cd ../;')
+#os.system('cd docs/; make html; cd ../;')
 return_val = os.system('pytest --cov=source --cov-report html')
 exit_status = os.WEXITSTATUS(return_val)
 print(f'exit status: {exit_status}')

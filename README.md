@@ -30,6 +30,7 @@ Getting Started
 7. Set github pages to use the ``docs/`` folder for github pages at the bottom
    of the "Settings" page
 8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README.
+9. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and create a status badge there
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/, unit tests and a new docs build will run
