@@ -11,7 +11,8 @@ dependencies:
   - matplotlib
   - numpy
   - pandas
-  - pip
+  - pip:
+    - sphinxcontrib-bibtex
   - pyserial
   - pyvisa
   - scipy
