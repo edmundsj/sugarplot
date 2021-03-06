@@ -15,11 +15,19 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Echo conda path
+      run: |
+        echo '$env.CONDA';
+        echo '${env.CONDA}';
+        echo '${github.conda}';
+        echo ${{env.CONDA}};
+        echo ${{github.CONDA}};
+
     - name: Cache Conda Packages
       id: cache-conda
       uses: actions/cache@v2
       with:
-        path: ${{env.CONDA}}
+        path: "$env.CONDA"
         key: ${{ runner.os }}-conda
 
     - name: Install dependencies
