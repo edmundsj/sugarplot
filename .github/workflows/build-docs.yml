@@ -18,6 +18,9 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         $CONDA/bin/conda env update --file environment.yml --name base
+    - name: Build docs
+      run: |
+        cd docs; make html; cd ..;
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         # Optional but recommended
