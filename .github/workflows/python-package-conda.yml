@@ -20,12 +20,29 @@ jobs:
     - name: Test conda path
       run: echo $CONDA_PATH
 
-    - name: Cache Conda Packages
-      id: cache-conda
-      uses: actions/cache@v2
-      with:
-        path: $CONDA_PATH
-        key: ${{ runner.os }}-conda
+    - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('environment.yml') }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: anaconda-client-env
+          channel-priority: strict
+          environment-file: environment.yml
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+
+      #- name: Cache Conda Packages
+      #id: cache-conda
+      #uses: actions/cache@v2
+      #with:
+      #path: $CONDA_PATH
+      #key: ${{ runner.os }}-conda
 
     - name: Install dependencies
       if: steps.cache-conda.outputs.cache-hit != 'true'
