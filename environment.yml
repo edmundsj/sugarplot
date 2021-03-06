@@ -19,7 +19,6 @@ dependencies:
   - scipy
   - sphinx
   - sphinx_rtd_theme
-  - sphinxcontrib.bibtex
   - sphinxcontrib-jsmath
   - setuptools
   - wheel
