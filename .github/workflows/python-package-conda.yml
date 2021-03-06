@@ -16,7 +16,7 @@ jobs:
         python-version: 3.8
 
     - name: test ls
-      run: ls -R ~; echo ls -R ~;
+      run: echo "$(ls -R)"
 
     - name: Cache conda
       uses: actions/cache@v2
@@ -39,8 +39,8 @@ jobs:
 
     - name: List conda binaries
       run: |
-        ls -R $CONDA;
-        ls -R $CONDA_PKGS_DIR;
+        echo "$(ls -R $CONDA)"
+        echo "$(ls -R $CONDA_PKGS_DIR)"
 
     - name: Test with pytest using full test suite
       run: |
