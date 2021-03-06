@@ -22,7 +22,6 @@ coverage.xml
 build/
 dist/
 htmlcov/
-_sources/
 rcwa.egg-info/
 
 debugging_notes

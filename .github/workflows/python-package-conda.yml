@@ -22,6 +22,8 @@ jobs:
         echo '${github.conda}';
         echo ${{env.CONDA}};
         echo ${{github.CONDA}};
+        echo ${{CONDA}};
+        echo ${{conda}};
 
     - name: Cache Conda Packages
       id: cache-conda
