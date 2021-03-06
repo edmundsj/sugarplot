@@ -15,21 +15,16 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Set env
+    - name: Set conda path
       run: echo "CONDA_PATH=$(echo $CONDA)" >> $GITHUB_ENV
-    - name: Test
+    - name: Test conda path
       run: echo $CONDA_PATH
-
-    - name: Echo ANY ENVIRONMENT VARIABLE
-      run:
-        echo "${{ env.GITHUB_WORKFLOW }}"
-        echo "${CONDA}" # Shell environment variable
 
     - name: Cache Conda Packages
       id: cache-conda
       uses: actions/cache@v2
       with:
-        path: ${CONDA}
+        path: $CONDA_PATH
         key: ${{ runner.os }}-conda
 
     - name: Install dependencies
