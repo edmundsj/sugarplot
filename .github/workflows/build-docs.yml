@@ -18,6 +18,7 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         $CONDA/bin/conda env update --file environment.yml --name base
+
     - name: Build docs
       run: |
          # Remove old _sources and _static directory
