@@ -15,9 +15,6 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: test ls
-      run: echo "$(ls -R)"
-
     - name: Cache conda
       uses: actions/cache@v2
       env:
@@ -36,11 +33,6 @@ jobs:
         channel-priority: strict
         environment-file: environment.yml
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-
-    - name: List conda binaries
-      run: |
-        echo "$(ls -R $CONDA)"
-        echo "$(ls -R $CONDA_PKGS_DIR)"
 
     - name: Test with pytest using full test suite
       run: |
