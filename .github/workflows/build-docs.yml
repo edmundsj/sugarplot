@@ -41,7 +41,7 @@ jobs:
          rm -rf ./docs/_sources;
          rm -rf ./docs/_static;
          # Execute the document build with conda
-         $CONDA/bin/sphinx-build -M html ./docs/source ./docs;
+         $CONDA/envs/anaconda-client-env/bin/sphinx-build -M html ./docs/source ./docs;
          # Move docs into root directory
          mv ./docs/html/* ./docs; 
          # Move buildinfo 
