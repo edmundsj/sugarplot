@@ -1,4 +1,4 @@
-#Template Github Repository
+# Template Github Repository
 [![Build](https://github.com/edmundsj/template/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/edmundsj/template/actions/workflows/python-package-conda.yml) [![docs](https://github.com/edmundsj/template/actions/workflows/build-docs.yml/badge.svg)](https://github.com/edmundsj/template/actions/workflows/build-docs.yml )[![codecov](https://codecov.io/gh/edmundsj/template/branch/main/graph/badge.svg?token=7L4PK4K0P3)](https://codecov.io/gh/edmundsj/template)
 
 This is a template repository for python projects which use sphinx for
@@ -6,7 +6,7 @@ documentation, github actions for building, pytest and codecov for test
 coverage.
 
 
-##Getting Started
+## Getting Started
 1. Clone this repository into your desired directory
 
     ```git clone https://github.com/edmundsj/template.git <DESIRED_DIRECTORY>```
@@ -33,7 +33,8 @@ coverage.
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/
 
-##Features
+## Features
+
 - Github actions unit test integration via pytest
 - Github actions package management with conda
 - Github actions documentation build using sphinx and reST/markdown, with auto
@@ -45,17 +46,16 @@ self-push to repository after successful build
 
 
 ## How to Use
-###Adding Additional Unit Tests
+### Adding Additional Unit Tests
 - Any time you want to add additional unit tests just add them to those in the
 ``tests/`` directory and prepend with the name ``test``. These will be
 automatically found by pytest and run during local commits and remote builds.
 
-###Writing the Documentation
+### Writing the Documentation
 - The documentation source is located in ``docs/source`` and is written in
 restructured text (markdown is also available).
 
-###Building the Documentation
-----------------------------
+### Building the Documentation
 Simply run ``make html`` from the ``docs/`` directory. This will compile the
 files in the ``docs/source/`` directory, and place them in the main ``docs/``
 directory where github pages can find them.
@@ -66,6 +66,6 @@ directory where github pages can find them.
 - [Github Actions](https://github.com/features/actions)
 - [Codecov](https://codecov.io/)
 
-##Acknowledgements
+## Acknowledgements
 Thanks to all the great people on stack overflow and github, for their
 seemingly boundless tolerance to my and others' questions. 
