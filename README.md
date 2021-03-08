@@ -65,6 +65,7 @@ directory where github pages can find them.
 - [pytest](https://docs.pytest.org/en/stable/index.html)
 - [Github Actions](https://github.com/features/actions)
 - [Codecov](https://codecov.io/)
+- [Github Pages](https://pages.github.com/)
 
 ## Acknowledgements
 Thanks to all the great people on stack overflow and github, for their
