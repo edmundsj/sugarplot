@@ -20,15 +20,16 @@ coverage.
 
    ```git remote set-url origin <NEW_REPO_URL>```
 
-5. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add
-   the CODECOV_TOKEN secret to the github repository.
-6. Push to the new repository 
+
+5. Push to the new repository 
 
     ```git push -u origin main```
 
-7. Set github pages to use the ``docs/`` folder for github pages at the bottom
+6. Set github pages to use the ``docs/`` folder for github pages at the bottom
    of the "Settings" page
-8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
+7. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
+8. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add
+   the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/
