@@ -35,9 +35,9 @@ jobs:
         environment-file: environment.yml
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
-    - name: Test with pytest using full test suite
+    - name: Test with pytest, generate coverage report
       run: |
-        $CONDA/envs/anaconda-client-env/bin/pytest --cov=./source --cov-report xml
+        $CONDA/envs/anaconda-client-env/bin/pytest --cov=./pytemplate/source --cov-report xml
 
     - name: Lint with flake8
       run: |
@@ -57,3 +57,23 @@ jobs:
         fail_ci_if_error: true
         path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
+
+    - name: Build python package
+      run:
+        $CONDA/bin/python setup.py sdist bdist_wheel
+
+    - name: Publish to test PyPi
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: $$ {{ secrets.pypi_test_password }}
+        repository_url: https://test.pypi.org/legacy
+        verbose: true
+
+    - name: Download and install from TestPyPi
+      run:
+        pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate
+
+    - name: Run testPyPi test suite
+      run: 
+        python -m pytest $CONDA/envs/anaconda-client-env/bin/pytemplate

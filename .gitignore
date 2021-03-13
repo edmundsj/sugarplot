@@ -22,6 +22,6 @@ coverage.xml
 build/
 dist/
 htmlcov/
-rcwa.egg-info/
+pytemplate.egg-info/
 
 debugging_notes
