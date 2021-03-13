@@ -97,4 +97,4 @@ jobs:
 
     - name: Run PyPi test suite
       run: 
-        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
+        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/pytemplate/
