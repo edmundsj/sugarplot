@@ -1,6 +1,9 @@
 # ignore all vim-generated swap files
 *.swp
 
+# Ignore all backup files
+*.bak
+
 # ignore whatever this is
 .DS_STORE
 
