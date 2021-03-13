@@ -76,7 +76,7 @@ jobs:
 
     - name: Recursively list conda names
       run:
-        echo "$(ls -R $CONDA)`
+        echo "$(ls -R $CONDA)"
 
     - name: Run testPyPi test suite
       run: 
