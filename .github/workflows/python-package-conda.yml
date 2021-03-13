@@ -72,15 +72,15 @@ jobs:
 
     - name: Download and install from TestPyPi
       run:
-        pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate
+        pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate;
 
-    - name: Recursively list conda names
+    - name: Show where pytemplate is located
       run:
-        echo "$(ls -R $CONDA)"
+        pip show pytemplate;
 
     - name: Run testPyPi test suite
       run: 
-        $CONDA/bin/python -m pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
+        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
 
     - name: Deplay to PyPi
       uses: pypa/gh-action-pypi-publish@master
