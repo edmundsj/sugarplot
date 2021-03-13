@@ -62,7 +62,7 @@ jobs:
       run:
         $CONDA/bin/python setup.py sdist bdist_wheel
 
-    - name: Publish to test PyPi
+    - name: Deplay to test PyPi
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__

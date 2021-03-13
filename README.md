@@ -31,7 +31,7 @@ coverage.
 8. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add
    the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
 9. In the ``setup.py``, ``.hooks/pre-commit``, and ``.github/workflows/python-package-conda`` files, change all instances of "pytemplate" to "PACKAGE_NAME". 
-10. Create a new project on testPyPi
+10. Create a new authentication token on testPyPi and name it "test_pypi_password"
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/
