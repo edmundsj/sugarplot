@@ -1,4 +1,4 @@
-import some_module
+from template import SomeClass
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
 
