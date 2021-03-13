@@ -31,10 +31,12 @@ coverage.
 8. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add
    the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
 9. In the ``setup.py``, ``.hooks/pre-commit``, and ``.github/workflows/python-package-conda`` files, change all instances of "pytemplate" to "PACKAGE_NAME". 
-10. Create a new authentication token on testPyPi and name it "test_pypi_password"
+10. Create a new authentication token on testPyPi and add it as a github secret named "test_pypi_password"*
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/
+
+* Note - since the package does not already exist on pyPi or testPyPi you will need to create a token that has access to all your projects. This obviously isn't an optimal way of doing things, and this should really be changed. I may want to add a setup script which does all the renaming, changes github hooks, and does an initial deploy to pypi and testpypi. If you want after the first push, you can create a new token restricted to the newly-pushed project.
 
 ## Features
 
