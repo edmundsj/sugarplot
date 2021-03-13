@@ -30,9 +30,8 @@ coverage.
 7. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
 8. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add
    the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
-9. In the ``setup.py`` file, change all instances of "template" to "PACKAGE_NAME". Write a short description.
-10. In the ``.github/workflows/python-package-conda.yml`` file, change all instances of ``template`` to ``PACKAGE_NAME``
-11. Create a new project on testPyPi
+9. In the ``setup.py``, ``.hooks/pre-commit``, and ``.github/workflows/python-package-conda`` files, change all instances of "pytemplate" to "PACKAGE_NAME". 
+10. Create a new project on testPyPi
 
 Done! Your repository should be viewable on github pages: 
 https://edmundsj.github.io/REPO_NAME/
