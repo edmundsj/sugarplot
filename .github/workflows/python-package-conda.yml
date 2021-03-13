@@ -72,11 +72,11 @@ jobs:
 
     - name: Download and install from TestPyPi
       run:
-        pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate;
+        $CONDA/envs/anaconda-client-env/bin/pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate;
 
     - name: Show where pytemplate is located
       run:
-        pip show pytemplate;
+        $CONDA/envs/anaconda-client-env/bin/pip show pytemplate;
 
     - name: Run testPyPi test suite
       run: 
