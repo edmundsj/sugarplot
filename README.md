@@ -49,6 +49,8 @@ self-push to repository after successful build
 - Coverage uploaded automatically to codecov after successful build
 - [FUTURE] Auto-deploy to pyPi/testpyPi after successful build
 
+## Common Issues
+- It appears pypi test tokens do not copy well by default into github secrets. For some reason I can't get it to behave nicely.
 
 ## How to Use
 ### Adding Additional Unit Tests
