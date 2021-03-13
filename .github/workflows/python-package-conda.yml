@@ -76,4 +76,21 @@ jobs:
 
     - name: Run testPyPi test suite
       run: 
-        python -m pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
+        $CONDA/bin/python -m pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
+
+    - name: Deplay to PyPi
+      uses: pypa/gh-action-pypi-publish@master
+      if: github.ref == 'refs/heads/main'
+      with:
+        user: __token__
+        password: ${{ secrets.pypi_password }}
+        verbose: true
+
+    - name: Download aand install from PyPi
+      run: 
+        pip uninstall -y pytemplate;
+        pip install pytemplate;
+
+    - name: Run PyPi test suite
+      run: 
+        $CONDA/bin/python -m pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
