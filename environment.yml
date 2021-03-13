@@ -15,6 +15,7 @@ dependencies:
   - pandas
   - pip:
     - sphinxcontrib-bibtex
+    - pint
   - pyserial
   - pyvisa
   - scipy
@@ -23,4 +24,3 @@ dependencies:
   - sphinxcontrib-jsmath
   - setuptools
   - wheel
-  - pyyaml

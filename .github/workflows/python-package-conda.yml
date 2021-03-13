@@ -80,7 +80,7 @@ jobs:
 
     - name: Run testPyPi test suite
       run: 
-        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/bin/pytemplate
+        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/pytemplate/
 
     - name: Deplay to PyPi
       uses: pypa/gh-action-pypi-publish@master
