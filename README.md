@@ -10,23 +10,35 @@ coverage.
 0. Choose a name for the new repository. Make sure it's available as a name on [testPyPi](https://test.pypi.org/)
   and [PyPi](https://pypi.org/). Create a new directory with that chosen module name.
 
-1. Create a new repository on github with your chosen module name.
+1. Create a new repository on github by clicking "Use this template"
 
-2. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
 
-3. Create a new authentication token on testPyPi and add it as a github secret named ``test_pypi_password``\*
-
-4. Create a new authentication token on PyPi and add it as a github secret named ``pypi_password``\*
-
-5. Clone this repository into your new directory
+2. Clone this repository into your new directory
 
     ```git clone https://github.com/edmundsj/template.git <MODULE_NAME>```
 
-6. Navigate into the cloned repository, and run the setup script. This will change all the names in the relevant setup files, using:
+2. Set github pages to use the ``docs/`` folder for github pages at the bottom of the "Settings" page
+
+3. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
+
+4. Create a new authentication token on testPyPi and add it as a github secret named ``test_pypi_token``\*
+
+5. Create a new authentication token on PyPi and add it as a github secret named ``pypi_token``\*
+
+6. Navigate into the cloned repository, and run the setup script. This will change all the names in the relevant setup files. If this does not work, see the end of the tutorial.:
 
     ```python repo_setup.py```
 
-If this does not work, you will need to do the following manually:
+8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
+9. If desired, once the build on the remote server finishes, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project.
+
+
+Done! Your repository should be viewable on github pages: 
+https://edmundsj.github.io/REPO_NAME/
+
+* Note - since the package does not already exist on pyPi or testPyPi you will need to create a token that has access to all your projects. This obviously isn't an optimal way of doing things, and this should really be changed. I may want to add a setup script which does all the renaming, changes github hooks, and does an initial deploy to pypi and testpypi. If you want after the first push, you can create a new token restricted to the newly-pushed project.
+
+If step 6 does not work, you may need to do a git pull before execution. If that doesn't work, you can execute the following manually:
 
 6a. Change the git hooks location:
 
@@ -39,16 +51,6 @@ If this does not work, you will need to do the following manually:
 6d. Push to the new repository 
 
     ```git push -u origin main```
-
-7. Set github pages to use the ``docs/`` folder for github pages at the bottom of the "Settings" page
-8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
-9. If desired, once the build on the remote server finishes, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project.
-
-
-Done! Your repository should be viewable on github pages: 
-https://edmundsj.github.io/REPO_NAME/
-
-* Note - since the package does not already exist on pyPi or testPyPi you will need to create a token that has access to all your projects. This obviously isn't an optimal way of doing things, and this should really be changed. I may want to add a setup script which does all the renaming, changes github hooks, and does an initial deploy to pypi and testpypi. If you want after the first push, you can create a new token restricted to the newly-pushed project.
 
 ## Features
 
