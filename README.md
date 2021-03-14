@@ -62,6 +62,7 @@ self-push to repository after successful build
 - [FUTURE] Auto-deploy to pyPi/testpyPi after successful build
 
 ## Common Issues
+- Re-running builds on github actions will cause them to fail, as the build number deployed to PyPi depends on the github run number, which does not change if you restart a build.
 
 ## How to Use
 ### Adding Additional Unit Tests
