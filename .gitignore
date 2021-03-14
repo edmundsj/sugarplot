@@ -1,5 +1,6 @@
 # ignore all vim-generated swap files
 *.swp
+*.swo
 
 # Ignore all backup files
 *.bak
