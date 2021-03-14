@@ -12,35 +12,38 @@ coverage.
 
 1. Create a new repository on github with your chosen module name.
 
-1. Clone this repository into your new directory
+2. Set github pages to use the ``docs/`` folder for github pages at the bottom of the "Settings" page
+
+3. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
+
+4. Create a new authentication token on testPyPi and add it as a github secret named ``test_pypi_password``\*
+
+5. Create a new authentication token on PyPi and add it as a github secret named ``pypi_password``\*
+
+6. Clone this repository into your new directory
 
     ```git clone https://github.com/edmundsj/template.git <MODULE_NAME>```
 
-2. Navigate into the cloned repository, and run the setup script. This will change all the names in the relevant setup files, using:
+7. Navigate into the cloned repository, and run the setup script. This will change all the names in the relevant setup files, using:
 
     ```python repo_setup.py```
 
 If this does not work, you will need to do the following manually:
 
-2a. Change the git hooks location:
+7a. Change the git hooks location:
 
     ```git config core.hooksPath .hooks```
-2b. Change this repository's name with 
+7b. Change this repository's name with 
 
    ```git remote set-url origin <NEW_REPO_URL>```
-2c. In the ``setup.py``, ``.hooks/pre-commit``, and ``.github/workflows/python-package-conda`` files, change all instances of "pytemplate" to "MODULE_NAME". 
+7c. In the ``setup.py``, ``.hooks/pre-commit``, and ``.github/workflows/python-package-conda`` files, change all instances of "pytemplate" to "MODULE_NAME". 
 
-3. Create a new repository on github
-
-4. Set github pages to use the ``docs/`` folder for github pages at the bottom of the "Settings" page
-5. Add this repositry to codecov: https://app.codecov.io/gh/edmundsj, and add the CODECOV_TOKEN secret to the github repository. You may need to login to codecov to refresh the repositories.
-6. Create a new authentication token on testPyPi and add it as a github secret named "test_pypi_password"*
-7. Create a new authentication token on PyPi and add it as a github secret named "pypi_password"*
-8. Push to the new repository 
+7d. Push to the new repository 
 
     ```git push -u origin main```
-11. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
-12. [RECOMMENDED] If desired, once the build on the remote server is working, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project.
+
+8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
+9. If desired, once the build on the remote server finishes, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project.
 
 
 Done! Your repository should be viewable on github pages: 

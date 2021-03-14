@@ -37,7 +37,7 @@ jobs:
 
     - name: Test with pytest, generate coverage report
       run: |
-        $CONDA/envs/anaconda-client-env/bin/pytest --cov=./pytemplate/source --cov-report xml
+        $CONDA/envs/anaconda-client-env/bin/pytest --cov=./YOLO/source --cov-report xml
 
     - name: Lint with flake8
       run: |
@@ -72,15 +72,15 @@ jobs:
 
     - name: Download and install from TestPyPi
       run:
-        $CONDA/envs/anaconda-client-env/bin/pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple pytemplate;
+        $CONDA/envs/anaconda-client-env/bin/pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple YOLO;
 
-    - name: Show where pytemplate is located
+    - name: Show where YOLO is located
       run:
-        $CONDA/envs/anaconda-client-env/bin/pip show pytemplate;
+        $CONDA/envs/anaconda-client-env/bin/pip show YOLO;
 
     - name: Run testPyPi test suite
       run: 
-        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/pytemplate/
+        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/YOLO/
 
     - name: Deplay to PyPi
       uses: pypa/gh-action-pypi-publish@master
@@ -92,9 +92,9 @@ jobs:
 
     - name: Download aand install from PyPi
       run: 
-        pip uninstall -y pytemplate;
-        pip install pytemplate;
+        pip uninstall -y YOLO;
+        pip install YOLO;
 
     - name: Run PyPi test suite
       run: 
-        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/pytemplate/
+        $CONDA/envs/anaconda-client-env/bin/pytest $CONDA/envs/anaconda-client-env/lib/python3.8/site-packages/YOLO/

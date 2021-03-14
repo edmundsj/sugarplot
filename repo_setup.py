@@ -13,15 +13,24 @@ yes_no = input()
 if yes_no == 'y':
     os.system('git config core.hooksPath .hooks')
     os.system(f'git remote set-url origin https://github.com/edmundsj/{module_name}.git')
+    os.rename(old_name, module_name)
 
-    files_to_search = ['setup.py', '.hooks/pre-commit',
-    '.github/workflows/python-package-conda.yml']
+    files_to_read = [
+        '.github/workflows/python-package-conda.yml',
+        '.hooks/pre-commit',
+        './' + old_name + '/__init__.py',
+        'setup.py',
+        './docs/source/conf.py',
+        './' + old_name + '/test/test_something.py'
+    ]
 
-    for filename in files_to_search:
+    for filename in files_to_read:
         with fileinput.FileInput(
-                filename, inplace=True, backup='.bak') as fh:
+                filename, inplace=True) as fh:
             for line in fh:
                 print(line.replace(old_name, module_name), end='')
 
-
+    os.rename(old_name, module_name)
+    os.system('git add -A')
+    os.system(f'git commit -m "Script auto-setting up repository for first use with name {module_name}..."')
     os.system('git push')
