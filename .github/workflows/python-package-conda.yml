@@ -92,8 +92,8 @@ jobs:
 
     - name: Download aand install from PyPi
       run: 
-        $CONDA/envs/anaconda-client-env/bin/pip uninstall tabularasa
-        $CONDA/envs/anaconda-client-env/bin/pip install tabularasa
+        $CONDA/envs/anaconda-client-env/bin/pip uninstall tabularasa;
+        $CONDA/envs/anaconda-client-env/bin/pip install tabularasa;
 
     - name: Run PyPi test suite
       run: 
