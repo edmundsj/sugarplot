@@ -18,10 +18,10 @@ if yes_no == 'y':
     files_to_read = [
         '.github/workflows/python-package-conda.yml',
         '.hooks/pre-commit',
-        './' + old_name + '/__init__.py',
+        './' + module_name + '/__init__.py',
         'setup.py',
         './docs/source/conf.py',
-        './' + old_name + '/test/test_something.py'
+        './' + module_name + '/test/test_something.py'
     ]
 
     for filename in files_to_read:
@@ -30,7 +30,6 @@ if yes_no == 'y':
             for line in fh:
                 print(line.replace(old_name, module_name), end='')
 
-    os.rename(old_name, module_name)
     print('Adding all files to github ...')
     os.system('git add -A')
     os.system(f'git commit -m "Script auto-setting up repository for first use with name {module_name}..."')

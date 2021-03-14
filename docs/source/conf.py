@@ -8,8 +8,8 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../pytemplate/source/'))
-sys.path.insert(0, os.path.abspath('../../pytemplate/test/'))
+sys.path.insert(0, os.path.abspath('../../tabularasa/source/'))
+sys.path.insert(0, os.path.abspath('../../tabularasa/test/'))
 
 
 # -- Project information -----------------------------------------------------
