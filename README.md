@@ -7,8 +7,8 @@ coverage.
 
 
 ## Getting Started
-0. Choose a name for the new repository. Make sure it's available as a name on [testPyPi](
- 15 2. Change the git hooks location:) and [PyPi](https://pypi.org/). Create a new directory with that chosen module name.
+0. Choose a name for the new repository. Make sure it's available as a name on [testPyPi](https://test.pypy.org)
+  and [PyPi](https://pypi.org/). Create a new directory with that chosen module name.
 
 1. Create a new repository on github with your chosen module name.
 

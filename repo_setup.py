@@ -31,6 +31,7 @@ if yes_no == 'y':
                 print(line.replace(old_name, module_name), end='')
 
     os.rename(old_name, module_name)
+    print('Adding all files to github ...')
     os.system('git add -A')
     os.system(f'git commit -m "Script auto-setting up repository for first use with name {module_name}..."')
     os.system('git push')
