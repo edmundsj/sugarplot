@@ -29,8 +29,8 @@ coverage.
 
     ```python repo_setup.py```
 
-8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov.
-9. If desired, once the build on the remote server finishes, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project.
+7. If desired, once the build on the remote server finishes, replace the tokens from testPyPi and pyPi with ones that are restricted to this pyPi project. Delete the old ones.
+8. Create a status badge from the '... -> Create Status Badge' in the github actions area separately for docs and build, and paste them in the README, as well as from codecov. Add a project description in "SETUP.py" and fill out the sections of the downloaded README.
 
 
 Done! Your repository should be viewable on github pages: 
@@ -65,7 +65,8 @@ self-push to repository after successful build
 
 ## Common Issues
 - Re-running builds on github actions will cause them to fail, as the build number deployed to PyPi depends on the github run number, which does not change if you restart a build.
-- Pypi deploy is failing due to swap files. not sure why.
+- Pypi deploy is a little slower than test pypi, so it may not always be downloading the latest version.
+
 
 ## How to Use
 ### Adding Additional Unit Tests
