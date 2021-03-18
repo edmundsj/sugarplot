@@ -37,4 +37,4 @@ if yes_no == 'y':
     print('Adding develop branch and switching to it...')
     os.system('git branch develop')
     os.system('git checkout develop')
-    os.system('git push origin develop --set-upstream')
+    os.system('git push --set-upstream origin develop')
