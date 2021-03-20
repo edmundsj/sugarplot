@@ -18,7 +18,7 @@ with open("README.md", "r") as fh:
 		version="0.1." + str(os.environ['GITHUB_RUN_NUMBER']),
 		author="Jordan Edmunds",
 		author_email="edmundsj@uci.edu",
-		description="THIS IS A BRIEF DESCRIPTION",
+		description="ADD SHORT DESCRIPTION HERE",
 		long_description=long_description,
 		long_description_content_type="text/markdown",
 		url="https://github.com/edmundsj/tabularasa",
