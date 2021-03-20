@@ -11,6 +11,8 @@ print(f' Detected module name {module_name}. Is this correct (y/n) ?')
 yes_no = input()
 
 if yes_no == 'y':
+    print(f'Please provide a brief description of your package:\n')
+    description = input()
     os.system('git config core.hooksPath .hooks')
     os.system(f'git remote set-url origin https://github.com/edmundsj/{module_name}.git')
     os.rename(old_name, module_name)
@@ -29,6 +31,10 @@ if yes_no == 'y':
                 filename, inplace=True) as fh:
             for line in fh:
                 print(line.replace(old_name, module_name), end='')
+
+    with fileinput.FileInput('setup.py', inplace=True) as fh:
+        for line in fh:
+            print(line.replace('ADD SHORT DESCRIPTION HERE', description), end='')
 
     print('Adding all files to github ...')
     os.system('git add -A')
