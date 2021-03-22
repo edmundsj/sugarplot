@@ -3,7 +3,7 @@ from matplotlib.figure import Figure
 import pandas as pd
 import numpy as np
 
-from sugarplot import normalize_pandas, default_plotter, reflectance_plotter
+from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -74,3 +74,15 @@ def test_reflectance_plotter():
             subplot_kw={'ylabel': 'R', 'xlabel': 'Wavelength (nm)'})
     ax_desired.plot(R_2['Wavelength (nm)'], R_2['R'])
     assert_figures_equal(fig_actual, fig_desired)
+
+def test_power_spectrum_plot():
+    power_spectrum = pd.DataFrame({
+            'Frequency (Hz)': [1, 2, 3],
+            'Power (V ** 2)': [0.1, 0.1, 0.3]})
+    fig_actual, ax_actual = power_spectrum_plot(power_spectrum)
+    desired_fig = Figure()
+    desired_ax = desired_fig.subplots()
+    desired_ax.plot([1, 2, 3], 10*np.log10(np.array([0.1, 0.1, 0.3])))
+    desired_ax.set_xlabel('Frequency (Hz)')
+    desired_ax.set_ylabel('Power (dBV)')
+    assert_figures_equal(fig_actual, desired_fig)
