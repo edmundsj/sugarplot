@@ -4,6 +4,7 @@ Contains plotters for various types of datasets which require special plotting r
 from matplotlib.figure import Figure
 import sys, pathlib
 from sugarplot import normalize_pandas
+from spectralpy import to_standard_quantity, title_to_quantity
 import pandas as pd
 import numpy as np
 
@@ -21,8 +22,8 @@ def default_plotter(data, fig=None, ax=None, ydata=None, theory_func=None, theor
     """
     if isinstance(data, pd.DataFrame):
         return default_plot_pandas(data, fig=fig, ax=ax,
-                theory_func=theory_func,
-                theory_kw=theory_kw, subplot_kw=subplot_kw, line_kw=line_kw)
+                theory_func=theory_func, theory_kw=theory_kw,
+                subplot_kw=subplot_kw, line_kw=line_kw)
 
 def default_plot_pandas(data, fig=None, ax=None,
         theory_func=None, theory_kw={}, subplot_kw={},line_kw={}):
@@ -34,6 +35,7 @@ def default_plot_pandas(data, fig=None, ax=None,
     :param ax: axes to plot the data to
     :param theory_func: Function to plot along with xdata, of the form theory_func(xdata, theory_kw)
     :param theory_kw: Keyword arguments to be passed into theory_func
+    :param subplot_kw: Keyword arguments to be passed into fig.subplots()
     """
     subplot_kw = dict(
         subplot_kw, xlabel=data.columns[0], ylabel=data.columns[1])
@@ -88,4 +90,56 @@ def reflectance_plotter(
            linestyle='dashed', **line_kw)
         ax.legend(['Measured', 'Theory'])
 
+    return fig, ax
+
+def power_spectrum_plot(
+        power_spectrum, sampling_frequency=None, fig=None, ax=None,
+        ydata=None, theory_func=None, theory_kw={},
+        line_kw={}, subplot_kw={}):
+    """
+    Plots a given power spectrum.
+
+    :param power_spectrum: Power spectrum pandas DataFrame with Frequency in the first column and power in the second column
+    :param sampling_frequency: Sampling frequency the data was taken at
+    :returns fig, ax: Figure, axes pair for power spectrum plot
+
+    """
+    if isinstance(power_spectrum, pd.DataFrame):
+        return power_spectrum_plot_pandas(
+            power_spectrum, sampling_frequency=sampling_frequency,
+            fig=fig, ax=ax,
+            theory_func=theory_func, theory_kw=theory_kw,
+            line_kw=line_kw, subplot_kw=subplot_kw)
+    else:
+        raise NotImplementedError("Power spectrum plot not implemented" +
+                                  f" for type {type(power_spectrum)}")
+
+def power_spectrum_plot_pandas(power_spectrum, line_kw={}):
+    """
+    Implementation of powerSpectrumPlot for a pandas DataFrame. Plots a given power spectrum with units in the form Unit Name (unit type), i.e. Photocurrent (mA).
+
+    :param power_spectrum: The power spectrum to be plotted, with frequency bins on one column and power in the second column
+    :param line_kw: Keyword arguments to parameterize line in call to ax.plot()
+    """
+
+    subplot_kw = dict(
+        subplot_kw, xlabel=data.columns[0], ylabel=data.columns[1])
+    if not fig:
+        fig = Figure()
+    if not ax:
+        ax = fig.subplots(subplot_kw=subplot_kw)
+
+    frequency_label = power_spectrum.columns.values[0]
+    power_label = power_spectrum.columns.values[1]
+    power_quantity = title_to_quantity(power_label)
+    standard_quantity = to_standard_quantity(power_quantity)
+    base_units = np.sqrt(standard_quantity).units
+
+    ax.plot(
+        power_spectrum[frequency_label].values,
+        10*np.log10(standard_quantity.magnitude * \
+        power_spectrum[power_label].values), **line_kw)
+    ax.set_ylabel('dB{:~}'.format(base_units))
+    ax.set_xlabel(frequency_label)
+    prettifyPlot(ax=ax, fig=fig)
     return fig, ax
