@@ -36,7 +36,7 @@ def test_plot_pandas_log(data):
     desired_ax = desired_fig.subplots(subplot_kw=log_kw)
     desired_ax.plot(data['xdata'], data['ydata'])
     actual_fig, actual_ax = default_plotter(data['data'],
-            xscale='log', yscale='log')
+            subplot_kw=log_kw)
     assert_figures_equal(actual_fig, desired_fig)
 
 def test_plot_pandas_theory(data):

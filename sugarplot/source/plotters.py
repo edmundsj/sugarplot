@@ -7,7 +7,7 @@ from sugarplot import normalize_pandas
 import pandas as pd
 import numpy as np
 
-def default_plotter(data, ydata=None, theory_func=None, theory_kw={}, line_kw={}, **kwargs):
+def default_plotter(data, fig=None, ax=None, ydata=None, theory_func=None, theory_kw={}, line_kw={}, subplot_kw={}):
     """
     Default plotter which handles plotting pandas DataFrames, numpy arrays, and regular ol data.
 
@@ -16,12 +16,11 @@ def default_plotter(data, ydata=None, theory_func=None, theory_kw={}, line_kw={}
     :param theory_func: Function to plot along with xdata
     :param theory_kw: Keyword arguments to pass into theory_func
     :param line_kw: Keyword arguments to pass into ax.plot() function
+    :param subplot_kw: Keyword arguments to pass into fig.subplots() function
     :param kwargs: Additional keyword arguments, which will be passed into the ax.plot() function
     """
-    subplot_kw = kwargs
-
     if isinstance(data, pd.DataFrame):
-        return default_plot_pandas(data,
+        return default_plot_pandas(data, fig=fig, ax=ax,
                 theory_func=theory_func,
                 theory_kw=theory_kw, subplot_kw=subplot_kw, line_kw=line_kw)
 
