@@ -1,10 +1,16 @@
-.. _template-name:
-.. Documentation for Template
 
-Welcome to a Github Template
+Welcome to sugarplot's Documentation
 =============================================
 
-.. .. autoclass:: LIA.LIA
+.. automodule:: normalization
+    :members:
+    :undoc-members:
+
+.. automodule:: plotters
+    :members:
+    :undoc-members:
+
+.. automodule:: prettify
     :members:
     :undoc-members:
 
