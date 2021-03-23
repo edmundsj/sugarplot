@@ -144,6 +144,7 @@ def power_spectrum_plot_pandas(
     power_quantity = title_to_quantity(power_label)
     standard_quantity = to_standard_quantity(power_quantity)
     base_units = np.sqrt(standard_quantity).units
+    x_data = power_spectrum[frequency_label].values
 
     if theory_func:
         ax.plot(x_data, theory_func(x_data, **theory_kw),
@@ -151,7 +152,7 @@ def power_spectrum_plot_pandas(
         ax.legend(['Measured', 'Theory'])
 
     ax.plot(
-        power_spectrum[frequency_label].values,
+        x_data,
         10*np.log10(standard_quantity.magnitude * \
         power_spectrum[power_label].values), **line_kw)
 
