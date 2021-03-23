@@ -232,7 +232,7 @@ data2 as needed, and applying the operation specified (can be any function that 
 
 <dl class="py function">
 <dt id="plotters.power_spectrum_plot">
-<code class="sig-prename descclassname">plotters.</code><code class="sig-name descname">power_spectrum_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">power_spectrum</span></em>, <em class="sig-param"><span class="n">sampling_frequency</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ydata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">line_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">subplot_kw</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotters.power_spectrum_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">plotters.</code><code class="sig-name descname">power_spectrum_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">power_spectrum</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ydata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">line_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">subplot_kw</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotters.power_spectrum_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots a given power spectrum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -249,13 +249,19 @@ data2 as needed, and applying the operation specified (can be any function that 
 
 <dl class="py function">
 <dt id="plotters.power_spectrum_plot_pandas">
-<code class="sig-prename descclassname">plotters.</code><code class="sig-name descname">power_spectrum_plot_pandas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">power_spectrum</span></em>, <em class="sig-param"><span class="n">line_kw</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotters.power_spectrum_plot_pandas" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">plotters.</code><code class="sig-name descname">power_spectrum_plot_pandas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">power_spectrum</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">theory_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">line_kw</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">subplot_kw</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotters.power_spectrum_plot_pandas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of powerSpectrumPlot for a pandas DataFrame. Plots a given power spectrum with units in the form Unit Name (unit type), i.e. Photocurrent (mA).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>power_spectrum</strong> – The power spectrum to be plotted, with frequency bins on one column and power in the second column</p></li>
 <li><p><strong>line_kw</strong> – Keyword arguments to parameterize line in call to ax.plot()</p></li>
+<li><p><strong>fig</strong> – (optional) Figure to plot the data to</p></li>
+<li><p><strong>ax</strong> – (optional) axes to plot the data to</p></li>
+<li><p><strong>line_kw</strong> – Keyword arguments to pass into ax.plot()</p></li>
+<li><p><strong>subplot_kw</strong> – Keyword arguments to pass into fig.subplots()</p></li>
+<li><p><strong>theory_func</strong> – Theoretical PSD function</p></li>
+<li><p><strong>theory_kw</strong> – Keyword arguments to pass into theory_func</p></li>
 </ul>
 </dd>
 </dl>
