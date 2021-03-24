@@ -4,7 +4,7 @@ Contains plotters for various types of datasets which require special plotting r
 from matplotlib.figure import Figure
 import sys, pathlib
 from sugarplot import normalize_pandas, prettifyPlot
-from spectralpy import to_standard_quantity, title_to_quantity
+from sciparse import to_standard_quantity, title_to_quantity
 import pandas as pd
 import numpy as np
 
