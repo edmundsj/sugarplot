@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to a Github Template &mdash; Jordan Edmunds&#39; Ph.D.  documentation</title>
+  <title>Welcome to sugarplot’s Documentation &mdash; Jordan Edmunds&#39; Ph.D.  documentation</title>
   
 
   
@@ -80,7 +80,7 @@
             
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to a Github Template</a></li>
+<li><a class="reference internal" href="#">Welcome to sugarplot’s Documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -127,7 +127,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to a Github Template</li>
+      <li>Welcome to sugarplot’s Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -146,8 +146,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="template-name"></span><div class="section" id="welcome-to-a-github-template">
-<h1>Welcome to a Github Template<a class="headerlink" href="#welcome-to-a-github-template" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-normalization">
+<span id="welcome-to-sugarplot-s-documentation"></span><h1>Welcome to sugarplot’s Documentation<a class="headerlink" href="#module-normalization" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="normalization.interpolate">
+<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates data2 into the locations of data1. Requires data1 and data2 have no less than two values. If data1 and data2 have more than two columns, this will use the first and last columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data1</strong> – Data you want to manipulate in the future</p></li>
+<li><p><strong>data2</strong> – Data you want to interpolate to be happy with data1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns interpolated_data2</dt>
+<dd class="field-even"><p>data2 which has been interpolated to match the x-indices of data1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="normalization.normalize_pandas">
+<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">normalize_pandas</code><span class="sig-paren">(</span><em class="sig-param">data1</em>, <em class="sig-param">data2</em>, <em class="sig-param">operation=&lt;ufunc 'multiply'&gt;</em>, <em class="sig-param">operation_args=()</em>, <em class="sig-param">operation_kwargs={}</em>, <em class="sig-param">new_units=''</em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_pandas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an operation on data1 and data2, interpolating data from
+data2 as needed, and applying the operation specified (can be any function that takes two numpy arrays). New data will have indices and units of data1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data1</strong> – Main data to be manipulated/plotted/used</p></li>
+<li><p><strong>data2</strong> – Data to normalize / multiply / operate on relative to data1</p></li>
+<li><p><strong>operation</strong> – operation function i.e. np.multiply. Operates such that new_data = data1 [OPERATION] data2, i.e. new_data = data1 / data2</p></li>
+<li><p><strong>operation_args</strong> – Optional positional arguments to be passed into operation</p></li>
+<li><p><strong>operation_kwargs</strong> – Optional keyword arguments to be passed into operation</p></li>
+<li><p><strong>new_units</strong> – New column name for unit-laden dataFrame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns new_data</dt>
+<dd class="field-even"><p>pd.DataFrame = data1 [OPERATION] data2</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="normalization.normalize_reflectance">
+<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">normalize_reflectance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">photocurrent</span></em>, <em class="sig-param"><span class="n">reference_photocurrent</span></em>, <em class="sig-param"><span class="n">reference_reflectance</span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_reflectance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-prettify"></span><dl class="py function">
+<dt id="prettify.prettifyPlot">
+<code class="sig-prename descclassname">prettify.</code><code class="sig-name descname">prettifyPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prettify.prettifyPlot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <div class="toctree-wrapper compound">
 </div>
 </div>
