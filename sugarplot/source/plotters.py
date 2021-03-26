@@ -3,7 +3,7 @@ Contains plotters for various types of datasets which require special plotting r
 """
 from matplotlib.figure import Figure
 import sys, pathlib
-from sugarplot import normalize_pandas, prettifyPlot
+from sugarplot import normalize_pandas, prettifyPlot, ureg
 from sciparse import to_standard_quantity, title_to_quantity
 import pandas as pd
 import numpy as np
@@ -142,7 +142,13 @@ def power_spectrum_plot_pandas(
     frequency_label = power_spectrum.columns.values[0]
     power_label = power_spectrum.columns.values[1]
     power_quantity = title_to_quantity(power_label)
-    standard_quantity = to_standard_quantity(power_quantity)
+    if '/ hertz' in str(power_quantity):
+        is_psd = True
+        standard_quantity = to_standard_quantity(power_quantity*ureg.Hz)
+    else:
+        is_psd = False
+        standard_quantity = to_standard_quantity(power_quantity)
+
     base_units = np.sqrt(standard_quantity).units
     x_data = power_spectrum[frequency_label].values
 
@@ -156,7 +162,11 @@ def power_spectrum_plot_pandas(
         10*np.log10(standard_quantity.magnitude * \
         power_spectrum[power_label].values), **line_kw)
 
-    ax.set_ylabel('Power (dB{:~})'.format(base_units))
+    y_label = 'Power (dB{:~}'.format(base_units)
+    if is_psd:
+        y_label += '/Hz'
+    y_label += ')'
+    ax.set_ylabel(y_label)
     ax.set_xlabel(frequency_label)
     prettifyPlot(ax=ax, fig=fig)
     return fig, ax

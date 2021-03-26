@@ -86,3 +86,15 @@ def test_power_spectrum_plot():
     desired_ax.set_xlabel('Frequency (Hz)')
     desired_ax.set_ylabel('Power (dBV)')
     assert_figures_equal(fig_actual, desired_fig)
+
+def test_power_spectrum_plot():
+    power_spectrum = pd.DataFrame({
+            'Frequency (Hz)': [1, 2, 3],
+            'Power (V ** 2 / Hz)': [0.1, 0.1, 0.3]})
+    fig_actual, ax_actual = power_spectrum_plot(power_spectrum)
+    desired_fig = Figure()
+    desired_ax = desired_fig.subplots()
+    desired_ax.plot([1, 2, 3], 10*np.log10(np.array([0.1, 0.1, 0.3])))
+    desired_ax.set_xlabel('Frequency (Hz)')
+    desired_ax.set_ylabel('Power (dBV/Hz)')
+    assert_figures_equal(fig_actual, desired_fig)
