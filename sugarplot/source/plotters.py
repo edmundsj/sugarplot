@@ -72,15 +72,15 @@ def reflectance_plotter(
     :param subplot_kw: Keyword argumets to pass into the .subplots() function during Axes creation.
     :param line_kw: Keyword arguments to pass into the .plot() function during Line2D creation.
     """
-    subplot_kw = dict({'ylabel': 'R', 'xlabel': photocurrent.columns[0]},
+    subplot_kw = dict({'ylabel': 'R ()', 'xlabel': photocurrent.columns[0]},
             **subplot_kw)
     if not fig:
         fig = Figure()
     if not ax:
         ax = fig.subplots(subplot_kw=subplot_kw)
 
-    R_norm = normalize_pandas(photocurrent, reference_photocurrent, np.divide)
-    R_actual = normalize_pandas(R_norm, R_ref, np.multiply, new_units='R')
+    R_norm = normalize_pandas(photocurrent, reference_photocurrent, np.divide, new_name='R')
+    R_actual = normalize_pandas(R_norm, R_ref, np.multiply, new_name='R')
     x_data = R_actual.iloc[:, 0].values
     y_data = R_actual.iloc[:, 1].values
     ax.plot(x_data, y_data, **line_kw)

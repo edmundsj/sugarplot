@@ -59,20 +59,20 @@ def test_plot_pandas_theory(data):
 def test_reflectance_plotter():
     R_ref = pd.DataFrame({
             'Wavelength (nm)': np.arange(100, 150, 1),
-            'Reflectance (R)': np.linspace(0,1, 50)})
+            'Reflectance ()': np.linspace(0,1, 50)})
     I_ref = pd.DataFrame({
             'Wavelength (nm)': np.arange(100, 150, 5),
             'Photocurrent (nA)': np.linspace(1, 1, 10)})
     I_meas = pd.DataFrame({
             'Wavelength (nm)': np.linspace(110, 140,30),
             'Photocurrent (nA)': np.linspace(2, 2, 30)})
-    R_1 = normalize_pandas(I_meas, I_ref, np.divide)
-    R_2 = normalize_pandas(R_1, R_ref, np.multiply, new_units='R')
+    R_1 = normalize_pandas(I_meas, I_ref, np.divide, new_name='R')
+    R_2 = normalize_pandas(R_1, R_ref, np.multiply, new_name='R')
     fig_actual, ax_actual = reflectance_plotter(I_meas, I_ref, R_ref)
     fig_desired = Figure()
     ax_desired = fig_desired.subplots(
-            subplot_kw={'ylabel': 'R', 'xlabel': 'Wavelength (nm)'})
-    ax_desired.plot(R_2['Wavelength (nm)'], R_2['R'])
+            subplot_kw={'ylabel': 'R ()', 'xlabel': 'Wavelength (nm)'})
+    ax_desired.plot(R_2['Wavelength (nm)'], R_2['R ()'])
     assert_figures_equal(fig_actual, fig_desired)
 
 def test_power_spectrum_plot():
@@ -87,7 +87,7 @@ def test_power_spectrum_plot():
     desired_ax.set_ylabel('Power (dBV)')
     assert_figures_equal(fig_actual, desired_fig)
 
-def test_power_spectrum_plot():
+def test_power_spectrum_plot_psd():
     power_spectrum = pd.DataFrame({
             'Frequency (Hz)': [1, 2, 3],
             'Power (V ** 2 / Hz)': [0.1, 0.1, 0.3]})
