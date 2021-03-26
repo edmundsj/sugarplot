@@ -71,8 +71,8 @@ def test_reflectance_plotter():
     fig_actual, ax_actual = reflectance_plotter(I_meas, I_ref, R_ref)
     fig_desired = Figure()
     ax_desired = fig_desired.subplots(
-            subplot_kw={'ylabel': 'R ()', 'xlabel': 'Wavelength (nm)'})
-    ax_desired.plot(R_2['Wavelength (nm)'], R_2['R ()'])
+            subplot_kw={'ylabel': 'R', 'xlabel': 'Wavelength (nm)'})
+    ax_desired.plot(R_2['Wavelength (nm)'], R_2['R'])
     assert_figures_equal(fig_actual, fig_desired)
 
 def test_power_spectrum_plot():

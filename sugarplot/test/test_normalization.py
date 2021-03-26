@@ -57,7 +57,7 @@ def test_normalize_div_integration():
             'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]})
     multiplied_data_desired =  pd.DataFrame({
             'Time (ms)': [0, 1, 2, 3, 4, 5],
-            'rel ()': [
+            'rel': [
             np.NaN,
             0.6,
             0.6,
@@ -79,7 +79,7 @@ def test_normalize_reflectance():
             'R ()': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
     reflectance_desired = pd.DataFrame({
             'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
-            'R ()': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
+            'R': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
     reflectance_actual = normalize_reflectance(
             photocurrent, reference_photocurrent, reference_reflectance)
     assert_frame_equal(reflectance_actual, reflectance_desired)
@@ -98,7 +98,7 @@ def test_normalize_reflectance_units():
     reflectance_desired = pd.DataFrame({
             'Boolergs (pA)': [5, 6.5, 0, 2.5, 4, 3.5],
             'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
-            'R ()': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
+            'R': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
     reflectance_actual = normalize_reflectance(
             photocurrent, reference_photocurrent, reference_reflectance,
             column_units=ureg.nm)
@@ -114,11 +114,11 @@ def test_normalize_reflectance_extra_data():
             'Photocurrent (nA)': [2, 2, 2.0, 2, 2, 2]})
     reference_reflectance = pd.DataFrame({
             'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
-            'R ()': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
+            'R': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
     reflectance_desired = pd.DataFrame({
             'Wavelength (nm)': [1, 1, 2, 2, 3, 3],
             'Amplitude': [0.1, 1, 0.1, 1, 0.1, 1],
-            'R ()': 0.5*np.array([0.3, 0.3, 0.5, 0.5, 0.3, 0.3])})
+            'R': 0.5*np.array([0.3, 0.3, 0.5, 0.5, 0.3, 0.3])})
     reflectance_actual = normalize_reflectance(
             photocurrent, reference_photocurrent, reference_reflectance)
     assert_frame_equal(reflectance_actual, reflectance_desired)
@@ -134,11 +134,11 @@ def test_normalize_reflectance_extra_data_both():
             'Photocurrent (nA)': [2, 2, 2.0, 2, 2, 2]})
     reference_reflectance = pd.DataFrame({
             'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
-            'R ()': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
+            'R': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
     reflectance_desired = pd.DataFrame({
             'Wavelength (nm)': [1, 1, 2, 2, 3, 3],
             'Amplitude': [0.1, 1, 0.1, 1, 0.1, 1],
-            'R ()': 0.5*np.array([0.3, 0.3, 0.5, 0.5, 0.3, 0.3])})
+            'R': 0.5*np.array([0.3, 0.3, 0.5, 0.5, 0.3, 0.3])})
     reflectance_actual = normalize_reflectance(
             photocurrent, reference_photocurrent, reference_reflectance)
     assert_frame_equal(reflectance_actual, reflectance_desired)
@@ -248,5 +248,5 @@ def test_interpolate_numpy():
             new_name='Reflectance')
     R_desired = pd.DataFrame({
             'Wavelength (nm)': np.linspace(110, 140, 30),
-            'Reflectance ()': 0.5*np.linspace(0.2, 0.8, 30)})
+            'Reflectance': 0.5*np.linspace(0.2, 0.8, 30)})
     assert_frame_equal(R_actual, R_desired)
