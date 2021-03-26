@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from sugarplot import interpolate, normalize_pandas, normalize_reflectance
+from sugarplot import interpolate, normalize_pandas, normalize_reflectance, ureg
 from pandas.testing import assert_frame_equal
 
 def test_normalize_pandas_simple_multiply():
@@ -84,6 +84,26 @@ def test_normalize_reflectance():
             photocurrent, reference_photocurrent, reference_reflectance)
     assert_frame_equal(reflectance_actual, reflectance_desired)
 
+def test_normalize_reflectance_units():
+    photocurrent = pd.DataFrame({
+            'Boolergs (pA)': [5, 6.5, 0, 2.5, 4, 3.5],
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'Photocurrent (nA)': [1, 1, 1, 1, 1, 1]})
+    reference_photocurrent = pd.DataFrame({
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'Photocurrent (nA)': [2, 2, 2.0, 2, 2, 2]})
+    reference_reflectance = pd.DataFrame({
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'Photocurrent (nA)': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
+    reflectance_desired = pd.DataFrame({
+            'Boolergs (pA)': [5, 6.5, 0, 2.5, 4, 3.5],
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'R': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
+    reflectance_actual = normalize_reflectance(
+            photocurrent, reference_photocurrent, reference_reflectance,
+            column_units=ureg.nm)
+    assert_frame_equal(reflectance_actual, reflectance_desired)
+
 def test_normalize_reflectance_extra_data():
     photocurrent = pd.DataFrame({
             'Wavelength (nm)': [1, 1, 2, 2, 3, 3],
@@ -141,6 +161,28 @@ def test_interpolate():
             0.8333333333333335]})
     interpolated_actual = interpolate(data1, data2)
     assert_frame_equal(interpolated_actual, interpolated_desired)
+
+def test_interpolate_units():
+    data1 = pd.DataFrame({
+            'Phlargen (mV)': [5, 4, 2, 4, 5, 6],
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5]})
+    data2 = pd.DataFrame({
+            'Time (ms)': [0, 0.6, 1.2, 1.8, 2.4, 3.0, 3.6, 4.2, 4.8, 5.4],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]})
+    interpolated_desired = pd.DataFrame({
+            'Phlargen (mV)': [5, 4, 2, 4, 5, 6],
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Current (nA)': [
+            0,
+            0.16666666666666669,
+            0.33333333333333337,
+            0.5,
+            0.6666666666666666,
+            0.8333333333333335]})
+    interpolated_actual = interpolate(data1, data2, column_units=ureg.ms)
+    assert_frame_equal(interpolated_actual, interpolated_desired)
+
 
 def test_interpolate_big_data1():
     """
