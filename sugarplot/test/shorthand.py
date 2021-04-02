@@ -1,8 +1,8 @@
 from matplotlib.figure import Figure
 from itertools import zip_longest
-from numpy.testing import assert_equal, assert_array_equal
+from numpy.testing import assert_equal, assert_array_equal, assert_allclose
 
-def assert_line_equal(actual_line, desired_line):
+def assert_line_equal(actual_line, desired_line, atol=1e-15, rtol=1e-10):
     """
     Check that two matplotlib lines are equal (have the same raw data)
     """
@@ -12,7 +12,8 @@ def assert_line_equal(actual_line, desired_line):
 
     actual_linestyle = actual_line.get_linestyle()
     desired_linestyle = desired_line.get_linestyle()
-    assert_equal(actual_linestyle, desired_linestyle, err_msg='linestyle')
+    assert_equal(actual_linestyle, desired_linestyle,
+            err_msg='linestyle')
 
     actual_alpha = actual_line.get_alpha()
     desired_alpha = desired_line.get_alpha()
@@ -22,10 +23,12 @@ def assert_line_equal(actual_line, desired_line):
     actual_ydata = actual_line.get_ydata()
     desired_xdata = desired_line.get_xdata()
     desired_ydata = desired_line.get_ydata()
-    assert_array_equal(actual_xdata, desired_xdata, err_msg='xdata')
-    assert_array_equal(actual_ydata, desired_ydata, err_msg='ydata')
+    assert_allclose(actual_xdata, desired_xdata,
+            err_msg='xdata', atol=atol, rtol=rtol)
+    assert_allclose(actual_ydata, desired_ydata,
+            err_msg='ydata', atol=atol,rtol=rtol)
 
-def assert_axes_equal(actual_ax, desired_ax):
+def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10):
     """
     Asserts that two axes are equal
     """
@@ -53,11 +56,11 @@ def assert_axes_equal(actual_ax, desired_ax):
     actual_lines = actual_ax.get_lines()
     desired_lines = desired_ax.get_lines()
     for actual_line, desired_line in zip_longest(actual_lines, desired_lines):
-        assert_line_equal(actual_line, desired_line)
+        assert_line_equal(actual_line, desired_line, atol=atol, rtol=rtol)
 
-def assert_figures_equal(actual_fig, desired_fig):
+def assert_figures_equal(actual_fig, desired_fig, atol=1e-15, rtol=1e-10):
     actual_axes = actual_fig.axes
     desired_axes = desired_fig.axes
     for actual_ax, desired_ax in zip_longest(actual_axes, desired_axes):
-        assert_axes_equal(actual_ax, desired_ax)
+        assert_axes_equal(actual_ax, desired_ax, atol=atol, rtol=rtol)
 

@@ -37,8 +37,10 @@ def default_plot_pandas(data, fig=None, ax=None,
     :param theory_kw: Keyword arguments to be passed into theory_func
     :param subplot_kw: Keyword arguments to be passed into fig.subplots()
     """
-    subplot_kw = dict(
-        subplot_kw, xlabel=data.columns[0], ylabel=data.columns[1])
+    if 'xlabel' not in subplot_kw.keys():
+        subplot_kw = dict(subplot_kw, xlabel=data.columns[0])
+    if 'ylabel' not in subplot_kw.keys():
+        subplot_kw = dict(subplot_kw, ylabel=data.columns[1])
     if not fig:
         fig = Figure()
     if not ax:
@@ -142,6 +144,7 @@ def power_spectrum_plot_pandas(
     frequency_label = power_spectrum.columns.values[0]
     power_label = power_spectrum.columns.values[1]
     power_quantity = title_to_quantity(power_label)
+    standard_quantity = to_standard_quantity(power_quantity)
     if '/ hertz' in str(power_quantity):
         is_psd = True
         standard_quantity = to_standard_quantity(power_quantity*ureg.Hz)
