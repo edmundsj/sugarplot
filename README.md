@@ -1,4 +1,4 @@
-# Template Github Repository
+# sugarplot - Making pretty data analysis easier
 [![Build](https://github.com/edmundsj/sugarplot/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/edmundsj/sugarplot/actions/workflows/python-package-conda.yml) [![docs](https://github.com/edmundsj/sugarplot/actions/workflows/build-docs.yml/badge.svg)](https://github.com/edmundsj/sugarplot/actions/workflows/build-docs.yml) [![codecov](https://codecov.io/gh/edmundsj/sugarplot/branch/main/graph/badge.svg?token=C7U4y4Gihv)](https://codecov.io/gh/edmundsj/sugarplot)
 
 This is a template repository for python projects which use sphinx for
