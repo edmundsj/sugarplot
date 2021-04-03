@@ -58,6 +58,7 @@ def default_plot_pandas(data, fig=None, ax=None,
     y_data = data.iloc[:, 1].values
 
     fig, ax = default_plot_numpy(x_data, y_data,
+            fig=fig, ax=ax,
             theory_func=theory_func, theory_kw=theory_kw,
             theory_x_data=theory_x_data, theory_y_data=theory_y_data,
             subplot_kw=subplot_kw,
@@ -111,10 +112,6 @@ def reflectance_plotter(
     """
     subplot_kw = dict({'ylabel': 'R', 'xlabel': photocurrent.columns[0]},
             **subplot_kw)
-    if not fig:
-        fig = Figure()
-    if not ax:
-        ax = fig.subplots(subplot_kw=subplot_kw)
 
     R_norm = normalize_pandas(photocurrent, reference_photocurrent, np.divide, new_name='R')
     R_actual = normalize_pandas(R_norm, R_ref, np.multiply, new_name='R')
@@ -186,11 +183,6 @@ def power_spectrum_plot_pandas(
         xlabel=power_spectrum.columns[0],
         ylabel=ylabel)
 
-    if not fig:
-        fig = Figure()
-    if not ax:
-        ax = fig.subplots(subplot_kw=subplot_kw)
-
     x_data = power_spectrum[frequency_label].values
     y_data =  10*np.log10(standard_quantity.magnitude * \
         power_spectrum[power_label].values)
@@ -203,6 +195,7 @@ def power_spectrum_plot_pandas(
         theory_y_data = None
 
     fig, ax = default_plot_numpy(x_data, y_data,
+            fig=fig, ax=ax,
             theory_func=theory_func, theory_kw=theory_kw,
             theory_x_data=theory_x_data, theory_y_data=theory_y_data,
             subplot_kw=subplot_kw,
