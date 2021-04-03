@@ -56,6 +56,25 @@ def test_plot_pandas_theory(data):
         theory_func=gaussian, theory_kw=theory_kw)
     assert_figures_equal(actual_fig, desired_fig)
 
+def test_plot_pandas_theory_data(data):
+    default_kw = {'xlabel': data['xlabel'], 'ylabel': data['ylabel']}
+    desired_fig = Figure()
+    desired_ax = desired_fig.subplots(subplot_kw=default_kw)
+    theory_line_kw = {'linestyle': 'dashed'}
+    theory_data=pd.DataFrame({
+            data['xlabel']: [0, 1, 2, 3],
+            data['ylabel']: [2, 3, 4, 5],
+            })
+
+    desired_ax.plot(data['xdata'], data['ydata'])
+    desired_ax.plot(theory_data[data['xlabel']],
+            theory_data[data['ylabel']], **theory_line_kw)
+    desired_ax.set_xlim(0.9, 3.3)
+
+    actual_fig, actual_ax = default_plotter(data['data'],
+            theory_data=theory_data)
+    assert_figures_equal(actual_fig, desired_fig)
+
 def test_reflectance_plotter():
     R_ref = pd.DataFrame({
             'Wavelength (nm)': np.arange(100, 150, 1),
@@ -73,6 +92,31 @@ def test_reflectance_plotter():
     ax_desired = fig_desired.subplots(
             subplot_kw={'ylabel': 'R', 'xlabel': 'Wavelength (nm)'})
     ax_desired.plot(R_2['Wavelength (nm)'], R_2['R'])
+    assert_figures_equal(fig_actual, fig_desired)
+
+def test_reflectance_plotter_theory_data():
+    R_ref = pd.DataFrame({
+            'Wavelength (nm)': np.arange(100, 150, 1),
+            'Reflectance': np.linspace(0,1, 50)})
+    I_ref = pd.DataFrame({
+            'Wavelength (nm)': np.arange(100, 150, 5),
+            'Photocurrent (nA)': np.linspace(1, 1, 10)})
+    I_meas = pd.DataFrame({
+            'Wavelength (nm)': np.linspace(110, 140,30),
+            'Photocurrent (nA)': np.linspace(2, 2, 30)})
+    R_1 = normalize_pandas(I_meas, I_ref, np.divide, new_name='R')
+    R_2 = normalize_pandas(R_1, R_ref, np.multiply, new_name='R')
+    fig_actual, ax_actual = reflectance_plotter(I_meas, I_ref, R_ref,
+            theory_data=R_ref)
+
+    fig_desired = Figure()
+
+    ax_desired = fig_desired.subplots(
+            subplot_kw={'ylabel': 'R', 'xlabel': 'Wavelength (nm)'})
+    ax_desired.plot(R_2['Wavelength (nm)'], R_2['R'])
+    ax_desired.plot(R_ref['Wavelength (nm)'], R_ref['Reflectance'],
+            linestyle='dashed')
+
     assert_figures_equal(fig_actual, fig_desired)
 
 def test_power_spectrum_plot():
@@ -98,3 +142,4 @@ def test_power_spectrum_plot_psd():
     desired_ax.set_xlabel('Frequency (Hz)')
     desired_ax.set_ylabel('Power (dBV/Hz)')
     assert_figures_equal(fig_actual, desired_fig)
+
