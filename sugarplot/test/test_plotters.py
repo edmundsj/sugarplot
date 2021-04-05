@@ -181,6 +181,4 @@ def test_plot_weibull():
     ax_desired.set_xlabel('mC/cm^2')
     ax_desired.set_ylabel('-ln(1-F)')
 
-    show_figure(fig_actual)
-    show_figure(fig_desired)
     assert_figures_equal(fig_actual, fig_desired)
