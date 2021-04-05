@@ -3,8 +3,9 @@ Contains plotters for various types of datasets which require special plotting r
 """
 from matplotlib.figure import Figure
 import sys, pathlib
-from sugarplot import normalize_pandas, prettifyPlot, ureg
+from sugarplot import normalize_pandas, prettifyPlot, ureg, plt
 from sciparse import to_standard_quantity, title_to_quantity
+from scipy.optimize import curve_fit
 import pandas as pd
 import numpy as np
 
@@ -152,7 +153,6 @@ def power_spectrum_plot_pandas(
     Implementation of powerSpectrumPlot for a pandas DataFrame. Plots a given power spectrum with units in the form Unit Name (unit type), i.e. Photocurrent (mA).
 
     :param power_spectrum: The power spectrum to be plotted, with frequency bins on one column and power in the second column
-    :param line_kw: Keyword arguments to parameterize line in call to ax.plot()
     :param fig: (optional) Figure to plot the data to
     :param ax: (optional) axes to plot the data to
     :param line_kw: Keyword arguments to pass into ax.plot()
@@ -201,3 +201,69 @@ def power_spectrum_plot_pandas(
             subplot_kw=subplot_kw,
             line_kw=line_kw)
     return fig, ax
+
+def weibull(x, beta=1, x0=1):
+    """
+    Weibull distribution
+    """
+    return 1 - np.exp(-np.power(x/x0, beta))
+
+def fit_weibull(data):
+    """
+    Fits a dataset to a weibull distribution by computing the CDF of the dataset, manipulating it appropriately, and fitting to it.
+
+    :param data: 1-dimensional array-like data to fit to. i.e. breakdown field or breakdown charge
+    """
+    # Correct the CDF for finite size
+    new_data = np.append(data, data[-1])
+
+    data_cdf = []
+    for i in range(len(new_data)):
+        data_cdf.append([new_data[i], (i+1)/len(new_data)])
+
+    data_cdf = np.transpose(np.array(data_cdf))
+    data_cdf_unbiased = data_cdf[:,:-1]
+    fit_params, pcov = curve_fit(
+            weibull, data_cdf_unbiased[0], data_cdf_unbiased[1])
+
+    return (fit_params, pcov, data_cdf_unbiased)
+
+
+def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={}):
+    """
+    Plots a dataset to the best-fit Weibull distribution
+
+    :param data: 1-D array-like data to be plotted
+    :param fig: (optional) Figure to plot the data to
+    :param ax: (optional) axes to plot the data to
+    :param line_kw: Keyword arguments to pass into ax.plot()
+    :param subplot_kw: Keyword arguments to pass into fig.subplots()
+
+    """
+    subplot_kw = dict(subplot_kw, xscale='log', yscale='log',
+            ylabel='-ln(1-F)')
+    fit_params, pcov, cdf = fit_weibull(data)
+    weibull_kw = {'beta': fit_params[0], 'x0': fit_params[1]}
+
+    def theory_func(x, **kwargs):
+        return -np.log(1 - weibull(x, **kwargs))
+
+    x_data = data
+    y_data = -np.log(1 - cdf[1])
+
+    fig, ax = default_plot_numpy(x_data, y_data,
+            fig=fig, ax=ax, theory_func=theory_func,
+            theory_kw=weibull_kw, subplot_kw=subplot_kw,
+            line_kw=line_kw)
+    return fig, ax
+
+def show_figure(fig):
+    """
+    create a dummy figure and use its manager to display "fig"
+    """
+
+    dummy = plt.figure()
+    new_manager = dummy.canvas.manager
+    new_manager.canvas.figure = fig
+    fig.set_canvas(new_manager.canvas)
+    plt.show()
