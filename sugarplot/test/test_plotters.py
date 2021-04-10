@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from numpy.testing import assert_equal
 
-from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, fit_weibull, plot_weibull, show_figure
+from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, show_figure
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -144,26 +144,6 @@ def test_power_spectrum_plot_psd():
     desired_ax.set_ylabel('Power (dBV/Hz)')
     assert_figures_equal(fig_actual, desired_fig)
 
-def test_weibull():
-    value_actual = weibull(1, x0=1, beta=2)
-    value_desired = 1 - np.e ** -1
-    assert_equal(value_actual, value_desired)
-
-    value_actual= weibull(1, x0=1/2, beta=2)
-    value_desired = 1 - np.e ** -4
-    assert_equal(value_actual, value_desired)
-
-def test_fit_weibull():
-    beta_desired = 1.0765117953238197
-    x0_desired = 0.1960321525466744
-    weibull_xval = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
-    test_data = np.array([0.03112801, 0.08555936, 0.15152679, 0.22351831, 0.2978115 ])
-
-    fit_params, pcov, cdf = fit_weibull(test_data)
-    beta_actual, x0_actual = fit_params[0], fit_params[1]
-    assert_equal(beta_actual, beta_desired)
-    assert_equal(x0_actual, x0_desired)
-
 def test_plot_weibull():
     test_data = np.array([0.03112801, 0.08555936, 0.15152679, 0.22351831, 0.2978115 ])
     test_cdf = np.array([1/6, 2/6, 3/6, 4/6, 5/6])
@@ -174,7 +154,7 @@ def test_plot_weibull():
 
     fig_desired = Figure()
     ax_desired = fig_desired.subplots()
-    ax_desired.plot(test_data, -np.log(1 - test_cdf))
+    ax_desired.scatter(test_data, -np.log(1 - test_cdf))
     ax_desired.plot(test_data, -np.log(1 - weibull_data), linestyle='dashed')
     ax_desired.set_xscale('log')
     ax_desired.set_yscale('log')
