@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from numpy.testing import assert_equal
 
-from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, show_figure
+from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, plot_lia, show_figure
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -162,3 +162,22 @@ def test_plot_weibull():
     ax_desired.set_ylabel('-ln(1-F)')
 
     assert_figures_equal(fig_actual, fig_desired)
+
+def test_plot_lia():
+    test_data = pd.DataFrame({
+            'time (s)': [0, 1, 2, 3, 4, 5],
+            'val (V)': [0, 1, 0, -1, 0, 1],
+            'Sync': [0, 1, 0, 0, 0, 1]})
+    fig_actual, ax_actual = plot_lia(test_data, n_points=5)
+
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(phases_desired, fits_desired)
+    ax_desired.plot(phases_desired, 1 / np.sqrt(2) * np.cos(phases_desired - np.pi/2), linestyle='dashed')
+    ax_desired.set_xlabel('Phase (rad)')
+    ax_desired.set_ylabel('val (V)')
+
+    assert_figures_equal(fig_actual, fig_desired, atol=1e-10)

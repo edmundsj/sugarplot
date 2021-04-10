@@ -7,6 +7,7 @@ from sciparse import to_standard_quantity, title_to_quantity
 from liapy import LIA
 import pandas as pd
 import numpy as np
+import pint
 from warnings import warn
 
 def weibull(x, beta=1, x0=1):
@@ -44,14 +45,22 @@ def fit_lia(data, n_points=101):
     def cos_func(x, a=1, phase=0.1):
         return a*np.cos(x - phase)
 
-    phase_delays = np.linspace(-np.pi, np.pi, n_points)
-    lia = LIA(data)
     ylabel = data.columns[1]
-    extracted_v = np.vectorize(lia.extract_signal_amplitude)
-    extracted_values = extracted_v(sync_phase_delay=phase_delays)
-    (amp, phase), pcov = curve_fit(cos_func, phase_delays, extracted_values, bounds=((0, -np.pi), (np.inf, np.pi)))
+
+    lia = LIA(data)
+    phase_delays = np.linspace(-np.pi, np.pi, n_points)
+    test_value = lia.extract_signal_amplitude(sync_phase_delay=0)
+    extracted_v_np = np.vectorize(lia.extract_signal_amplitude)
+    all_values = np.array([])
+    for phase in phase_delays:
+        retval = lia.extract_signal_amplitude(sync_phase_delay=phase)
+        if isinstance(retval, pint.Quantity):
+            retval = retval.m
+        all_values = np.append(all_values, retval)
+
+    (amp, phase), pcov = curve_fit(cos_func, phase_delays, all_values, bounds=((0, -np.pi), (np.inf, np.pi)))
     full_data = pd.DataFrame({
             'Phase (rad)': phase_delays,
-            ylabel: extracted_values
+            ylabel: all_values
             })
     return full_data, (amp, phase)

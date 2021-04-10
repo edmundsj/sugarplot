@@ -28,6 +28,12 @@ def assert_line_equal(actual_line, desired_line, atol=1e-15, rtol=1e-10):
     desired_alpha = desired_line.get_alpha()
     assert_equal(actual_alpha, desired_alpha, err_msg='alpha')
 
+def assert_collection_equal(actual_collection, desired_collection,
+        atol=1e-15, rtol=1e-10):
+    actual_points = actual_collection.get_offsets()
+    desired_points = desired_collection.get_offsets()
+    assert_allclose(actual_points, desired_points,
+            atol=atol, rtol=rtol, err_msg='Scatter plot points')
 
 def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10):
     """
@@ -39,6 +45,13 @@ def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10):
             err_msg='Number of lines in Axes not equal')
     for actual_line, desired_line in zip_longest(actual_lines, desired_lines):
         assert_line_equal(actual_line, desired_line, atol=atol, rtol=rtol)
+
+    actual_collections = actual_ax.collections
+    desired_collections = desired_ax.collections
+    for actual_collection, desired_collection in \
+        zip_longest(actual_collections, desired_collections):
+        assert_collection_equal(actual_collection, desired_collection,
+                atol=atol, rtol=rtol)
 
     actual_xticks = actual_ax.get_xticks()
     actual_yticks = actual_ax.get_yticks()
@@ -66,4 +79,3 @@ def assert_figures_equal(actual_fig, desired_fig, atol=1e-15, rtol=1e-10):
     desired_axes = desired_fig.axes
     for actual_ax, desired_ax in zip_longest(actual_axes, desired_axes):
         assert_axes_equal(actual_ax, desired_ax, atol=atol, rtol=rtol)
-

@@ -29,8 +29,25 @@ def lia_data():
     return full_data
 
 @pytest.fixture
+def lia_data_units():
+    time_data = [0, 1, 2, 3, 4, 5, 6]
+    sin_data = [0, 1, 0, -1, 0, 1, 0]
+    sync_data = [0, 1, 0, 0, 0, 1, 0]
+    full_data = pd.DataFrame({
+            'time (s)': time_data,
+            'val (V)': sin_data,
+            'Sync': sync_data})
+    return full_data
+
+
+@pytest.fixture
 def lia(lia_data):
     lia1 = LIA(lia_data)
+    return lia1
+
+@pytest.fixture
+def lia_units(lia_data_units):
+    lia1 = LIA(lia_data_units)
     return lia1
 
 def test_weibull():
@@ -70,4 +87,25 @@ def test_fit_lia_params(lia, lia_data):
     amp_desired = 1 / np.sqrt(2)
     phase_desired = np.pi/2
     data_actual, params_actual  = fit_lia(data=lia_data, n_points=n_points)
+    assert_allclose(params_actual, (amp_desired, phase_desired))
+
+def test_fit_lia_data_units(lia_units, lia_data_units):
+    n_points = 5
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+    data_desired = pd.DataFrame({
+            'Phase (rad)': phases_desired,
+            'val (V)': fits_desired})
+    data_actual, params_actual  = fit_lia(
+            data=lia_data_units, n_points=n_points)
+    assert_frame_equal(data_actual, data_desired, atol=1e-15)
+
+def test_fit_lia_params_units(lia_units, lia_data_units):
+    n_points = 5
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+    amp_desired = 1 / np.sqrt(2)
+    phase_desired = np.pi/2
+    data_actual, params_actual  = fit_lia(
+            data=lia_data_units, n_points=n_points)
     assert_allclose(params_actual, (amp_desired, phase_desired))

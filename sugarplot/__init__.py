@@ -7,4 +7,4 @@ from sugarplot.source.fitters import *
 from sugarplot.source.prettify import *
 from sugarplot.source.normalization import *
 from sugarplot.source.plotters import *
-from sugarplot.test.shorthand import *
+from sugarplot.test.testing import *
