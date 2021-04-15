@@ -36,9 +36,9 @@ def fit_weibull(data):
 
     return (fit_params, pcov, data_cdf_unbiased)
 
-def fit_lia(data, n_points=101):
+def fit_lia(data, n_points=101, fit=True):
     """
-    Fits the lock-in amplifier phase of a dataset
+    Generates amplitude vs. phase for lock-in-amplifier type data. Optionally fits that phase to a cosine function and returns the fit parameters.
 
     :param data: pandas DataFrame which contains a 'Sync' column with synchronization points
     """
@@ -58,7 +58,17 @@ def fit_lia(data, n_points=101):
             retval = retval.m
         all_values = np.append(all_values, retval)
 
-    (amp, phase), pcov = curve_fit(cos_func, phase_delays, all_values, bounds=((0, -np.pi), (np.inf, np.pi)))
+    if fit:
+        try:
+            (amp, phase), pcov = curve_fit(cos_func, phase_delays, all_values)
+            if amp < 0:
+                amp *= -1
+                phase -= np.pi
+            phase = np.mod(phase, 2*np.pi)
+        except RuntimeError as e:
+            breakpoint()
+    else:
+        (amp, phase) = (None, None)
     full_data = pd.DataFrame({
             'Phase (rad)': phase_delays,
             ylabel: all_values

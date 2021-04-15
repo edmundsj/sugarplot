@@ -6,50 +6,6 @@ from pandas.testing import assert_frame_equal
 from liapy import LIA
 from sugarplot import weibull, fit_weibull, fit_lia
 
-@pytest.fixture
-def data():
-    xdata = np.array([1, 2, 3])
-    ydata = np.array([1, 1/2, 1/3])
-    xlabel = 'Time (ms)'
-    ylabel = 'Frequency (Hz)'
-    data = pd.DataFrame({
-        xlabel: xdata, ylabel: ydata})
-    return {'xdata': xdata, 'ydata': ydata, 'xlabel': xlabel,
-        'ylabel': ylabel, 'data': data}
-
-@pytest.fixture
-def lia_data():
-    time_data = [0, 1, 2, 3, 4, 5, 6]
-    sin_data = [0, 1, 0, -1, 0, 1, 0]
-    sync_data = [0, 1, 0, 0, 0, 1, 0]
-    full_data = pd.DataFrame({
-            'time (s)': time_data,
-            'val': sin_data,
-            'Sync': sync_data})
-    return full_data
-
-@pytest.fixture
-def lia_data_units():
-    time_data = [0, 1, 2, 3, 4, 5, 6]
-    sin_data = [0, 1, 0, -1, 0, 1, 0]
-    sync_data = [0, 1, 0, 0, 0, 1, 0]
-    full_data = pd.DataFrame({
-            'time (s)': time_data,
-            'val (V)': sin_data,
-            'Sync': sync_data})
-    return full_data
-
-
-@pytest.fixture
-def lia(lia_data):
-    lia1 = LIA(lia_data)
-    return lia1
-
-@pytest.fixture
-def lia_units(lia_data_units):
-    lia1 = LIA(lia_data_units)
-    return lia1
-
 def test_weibull():
     value_actual = weibull(1, x0=1, beta=2)
     value_desired = 1 - np.e ** -1
@@ -109,3 +65,13 @@ def test_fit_lia_params_units(lia_units, lia_data_units):
     data_actual, params_actual  = fit_lia(
             data=lia_data_units, n_points=n_points)
     assert_allclose(params_actual, (amp_desired, phase_desired))
+
+def test_fit_lia_no_fit(lia_units, lia_data_units):
+    n_points = 5
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+    amp_desired = None
+    phase_desired = None
+    data_actual, params_actual  = fit_lia(
+            data=lia_data_units, n_points=n_points, fit=False)
+    assert_equal(params_actual, (amp_desired, phase_desired))

@@ -161,14 +161,10 @@ def test_plot_weibull():
     ax_desired.set_xlabel('mC/cm^2')
     ax_desired.set_ylabel('-ln(1-F)')
 
-    assert_figures_equal(fig_actual, fig_desired)
+    assert_figures_equal(fig_actual, fig_desired, atol=1e-8)
 
-def test_plot_lia():
-    test_data = pd.DataFrame({
-            'time (s)': [0, 1, 2, 3, 4, 5],
-            'val (V)': [0, 1, 0, -1, 0, 1],
-            'Sync': [0, 1, 0, 0, 0, 1]})
-    fig_actual, ax_actual = plot_lia(test_data, n_points=5)
+def test_plot_lia(lia_data):
+    fig_actual, ax_actual = plot_lia(lia_data, n_points=5)
 
     phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
     fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
@@ -178,6 +174,20 @@ def test_plot_lia():
     ax_desired.scatter(phases_desired, fits_desired)
     ax_desired.plot(phases_desired, 1 / np.sqrt(2) * np.cos(phases_desired - np.pi/2), linestyle='dashed')
     ax_desired.set_xlabel('Phase (rad)')
-    ax_desired.set_ylabel('val (V)')
+    ax_desired.set_ylabel('val')
+
+    assert_figures_equal(fig_actual, fig_desired, atol=1e-10)
+
+def test_plot_lia_nofit(lia_data):
+    fig_actual, ax_actual = plot_lia(lia_data, n_points=5, fit=False)
+
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(phases_desired, fits_desired)
+    ax_desired.set_xlabel('Phase (rad)')
+    ax_desired.set_ylabel('val')
 
     assert_figures_equal(fig_actual, fig_desired, atol=1e-10)

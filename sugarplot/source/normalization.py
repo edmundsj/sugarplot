@@ -1,9 +1,3 @@
-# THIS CODE WILL FAIL IF WE BLINDLY PASS IT TWO DATAFRAMES WE WANT TO
-# NORMALIZE AND THEY HAVE REPEATED X-VALUES, AS IS THE CASE WHEN
-# WE HAVE MULTIPLE CONDITIONS WE WANT TO TEST ALONG WITH A MASTER
-# DATASET. WILL HAVE TO ADD TESTS CASES TO THIS.
-# ALSO SHOULD NOT RELY ON THE ZEROTH COLUMN TO NORMALIZE REFLECTANCE,
-# SHOULD CHECK FOR A COLUMN WITH THE UNITS OF WAVELENGTH.
 import pandas as pd
 import numpy as np
 from sugarplot import ureg
@@ -11,7 +5,7 @@ from sciparse import cname_from_unit, title_to_quantity, quantity_to_title
 
 def normalize_reflectance(photocurrent,
         reference_photocurrent, reference_reflectance,
-        column_units=ureg.nm):
+        column_units=ureg.nm, target_units=None):
     """
     Converts a photocurrent spectra into a reflectance spectra using a reference photocurrent and known reference reflectance spectra.
 
@@ -22,7 +16,8 @@ def normalize_reflectance(photocurrent,
     """
     photocurrent_normalized = normalize_pandas(
             photocurrent, reference_photocurrent,
-            operation=np.divide, column_units=column_units)
+            operation=np.divide, column_units=column_units,
+            target_units=target_units)
     reflectance = normalize_pandas(
             photocurrent_normalized, reference_reflectance,
             operation=np.multiply, new_name='R',
@@ -32,10 +27,10 @@ def normalize_reflectance(photocurrent,
 def normalize_pandas(
         data1, data2, operation=np.multiply,
         operation_args=(), operation_kwargs={},
-        new_name='', column_units=None):
+        new_name='', column_units=None, target_units=None):
     """
     Performs an operation on data1 and data2, interpolating data from
-    data2 as needed, and applying the operation specified (can be any function that takes two numpy arrays). New data will have indices and units of data1
+    data2 as needed, and applying the operation specified (can be any function that takes two numpy arrays). New data will have indices and units of data1. 
 
     :param data1: Main data to be manipulated/plotted/used
     :param data2: Data to normalize / multiply / operate on relative to data1
@@ -46,9 +41,21 @@ def normalize_pandas(
     :returns new_data: pd.DataFrame = data1 [OPERATION] data2
 
     """
-    data2 = interpolate(data1, data2, column_units=column_units)
-    data1_name = data1.columns[-1]
-    data2_name = data2.columns[-1]
+# WARNING - ASSUMES WE ARE SORTING BY WAVELENGTH.
+    if column_units is not None:
+        column_name1 = cname_from_unit(data1, column_units)
+        column_name2 = cname_from_unit(data2, column_units)
+        data1 = data1.sort_values(column_name1, ignore_index=True)
+        data2 = data2.sort_values(column_name2, ignore_index=True)
+    if target_units is not None:
+        data1_name = cname_from_unit(data1, target_units)
+        data2_name = cname_from_unit(data2, target_units)
+    else:
+        data1_name = data1.columns[-1]
+        data2_name = data2.columns[-1]
+
+    data2 = interpolate(data1, data2,
+            column_units=column_units, target_units=target_units)
 
     data1_values = data1[data1_name].values
     data2_values = data2[data2_name].values
@@ -61,11 +68,12 @@ def normalize_pandas(
 
     normalized_values = operation(data1_values, data2_values,
             *operation_args, **operation_kwargs)
-    normalized_data = data1.iloc[:,:-1]
+    normalized_data = data1.copy()
+    del normalized_data[data1_name]
     normalized_data[new_data_name] = normalized_values
     return normalized_data
 
-def interpolate(data1, data2, column_units=None):
+def interpolate(data1, data2, column_units=None, target_units=None):
     """
     Interpolates data2 into the locations of data1. Requires data1 and data2 have no less than two values. If data1 and data2 have more than two columns, this will use the first and last columns.
 
@@ -74,7 +82,6 @@ def interpolate(data1, data2, column_units=None):
     :returns interpolated_data2: data2 which has been interpolated to match the x-indices of data1.
     :param column_units: Which units to use for normalization. Defaults to None
     """
-    y1_name, y2_name = data1.columns[-1], data2.columns[-1]
 
     if column_units is not None:
         x1_name = cname_from_unit(data1, column_units)
@@ -82,6 +89,11 @@ def interpolate(data1, data2, column_units=None):
     else:
         x1_name = data1.columns[0]
         x2_name = data2.columns[0]
+    if target_units is not None:
+        y1_name = cname_from_unit(data1, target_units)
+        y2_name = cname_from_unit(data2, target_units)
+    else:
+        y1_name, y2_name = data1.columns[-1], data2.columns[-1]
 
     x1_quantity = title_to_quantity(x1_name)
     x2_quantity = title_to_quantity(x2_name)
@@ -94,6 +106,6 @@ def interpolate(data1, data2, column_units=None):
     y2 = data2[y2_name].values * y2_quantity.to(y1_quantity).m
 
     interpolated_data = np.interp(x1, x2, y2)
-    interpolated_frame = data1.iloc[:,:-1]
+    interpolated_frame = data1.copy()
     interpolated_frame[y2_name] = interpolated_data
     return interpolated_frame

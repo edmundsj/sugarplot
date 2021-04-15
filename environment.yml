@@ -18,6 +18,7 @@ dependencies:
     - pint
     - spectralpy
     - sciparse
+    - liapy
   - pyserial
   - pyvisa
   - scipy

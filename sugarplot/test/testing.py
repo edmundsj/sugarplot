@@ -35,10 +35,12 @@ def assert_collection_equal(actual_collection, desired_collection,
     assert_allclose(actual_points, desired_points,
             atol=atol, rtol=rtol, err_msg='Scatter plot points')
 
-def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10):
+def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10, skip=[]):
     """
     Asserts that two axes are equal
     """
+    if isinstance(skip, str):
+        skip = [skip]
     actual_lines = actual_ax.get_lines()
     desired_lines = desired_ax.get_lines()
     assert_equal(len(actual_lines), len(desired_lines),
@@ -53,29 +55,40 @@ def assert_axes_equal(actual_ax, desired_ax, atol=1e-15, rtol=1e-10):
         assert_collection_equal(actual_collection, desired_collection,
                 atol=atol, rtol=rtol)
 
-    actual_xticks = actual_ax.get_xticks()
-    actual_yticks = actual_ax.get_yticks()
-    desired_xticks = desired_ax.get_xticks()
-    desired_yticks = desired_ax.get_yticks()
-    assert_array_equal(actual_xticks, desired_xticks, err_msg='xticks')
-    assert_array_equal(actual_yticks, desired_yticks, err_msg='yticks')
+    if 'xticks' not in skip and 'ticks' not in skip:
+        actual_xticks = actual_ax.get_xticks()
+        desired_xticks = desired_ax.get_xticks()
+        assert_array_equal(
+                actual_xticks, desired_xticks, err_msg='xticks')
+    if 'yticks' not in skip and 'ticks' not in skip:
+        actual_yticks = actual_ax.get_yticks()
+        desired_yticks = desired_ax.get_yticks()
+        assert_array_equal(
+                actual_yticks, desired_yticks, err_msg='yticks')
 
-    actual_xscale = actual_ax.get_xscale()
-    actual_yscale = actual_ax.get_yscale()
-    desired_xscale = desired_ax.get_xscale()
-    desired_yscale = desired_ax.get_yscale()
-    assert_equal(actual_xscale, desired_xscale, err_msg='xscale')
-    assert_equal(actual_yscale, desired_yscale, err_msg='yscale')
+    if 'xscale' not in skip and 'scale' not in skip:
+        actual_xscale = actual_ax.get_xscale()
+        desired_xscale = desired_ax.get_xscale()
+        assert_equal(actual_xscale, desired_xscale, err_msg='xscale')
+    if 'yscale' not in skip and 'scale' not in skip:
+        actual_yscale = actual_ax.get_yscale()
+        desired_yscale = desired_ax.get_yscale()
+        assert_equal(actual_yscale, desired_yscale, err_msg='yscale')
 
-    actual_xlabel = actual_ax.get_xlabel()
-    actual_ylabel = actual_ax.get_ylabel()
-    desired_xlabel = desired_ax.get_xlabel()
-    desired_ylabel = desired_ax.get_ylabel()
-    assert_equal(actual_xlabel, desired_xlabel, err_msg='xlabel')
-    assert_equal(actual_ylabel, desired_ylabel, err_msg='ylabel')
+    if 'xlabel' not in skip and 'label' not in skip:
+        actual_xlabel = actual_ax.get_xlabel()
+        desired_xlabel = desired_ax.get_xlabel()
+        assert_equal(actual_xlabel, desired_xlabel, err_msg='xlabel')
+    if 'ylabel' not in skip and 'label' not in skip:
+        actual_ylabel = actual_ax.get_ylabel()
+        desired_ylabel = desired_ax.get_ylabel()
+        assert_equal(actual_ylabel, desired_ylabel, err_msg='ylabel')
 
-def assert_figures_equal(actual_fig, desired_fig, atol=1e-15, rtol=1e-10):
+def assert_figures_equal(actual_fig, desired_fig, atol=1e-15, rtol=1e-10, skip=[]):
+    if isinstance(skip, str):
+        skip = [skip]
     actual_axes = actual_fig.axes
     desired_axes = desired_fig.axes
     for actual_ax, desired_ax in zip_longest(actual_axes, desired_axes):
-        assert_axes_equal(actual_ax, desired_ax, atol=atol, rtol=rtol)
+        assert_axes_equal(
+                actual_ax, desired_ax, atol=atol, rtol=rtol, skip=skip)

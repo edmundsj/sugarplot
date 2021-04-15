@@ -84,6 +84,23 @@ def test_normalize_reflectance():
             photocurrent, reference_photocurrent, reference_reflectance)
     assert_frame_equal(reflectance_actual, reflectance_desired)
 
+def test_normalize_reflectance_unsorted():
+    photocurrent = pd.DataFrame({
+            'Wavelength (nm)': [3.5, 1.5, 2, 2.5, 3, 1],
+            'Photocurrent (nA)': [1, 1, 1, 1, 1, 1]})
+    reference_photocurrent = pd.DataFrame({
+            'Wavelength (nm)': [2, 1.5, 2, 2.5, 3, 3.5],
+            'Photocurrent (nA)': [2, 2, 2.0, 2, 2, 2]})
+    reference_reflectance = pd.DataFrame({
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'R': [0.3, 0.4, 0.5, 0.4, 0.3, 0.2]})
+    reflectance_desired = pd.DataFrame({
+            'Wavelength (nm)': [1, 1.5, 2, 2.5, 3, 3.5],
+            'R': 0.5*np.array([0.3, 0.4, 0.5, 0.4, 0.3, 0.2])})
+    reflectance_actual = normalize_reflectance(
+            photocurrent, reference_photocurrent, reference_reflectance)
+    assert_frame_equal(reflectance_actual, reflectance_desired)
+
 def test_normalize_reflectance_units():
     photocurrent = pd.DataFrame({
             'Boolergs (pA)': [5, 6.5, 0, 2.5, 4, 3.5],
@@ -250,3 +267,53 @@ def test_interpolate_numpy():
             'Wavelength (nm)': np.linspace(110, 140, 30),
             'Reflectance': 0.5*np.linspace(0.2, 0.8, 30)})
     assert_frame_equal(R_actual, R_desired)
+
+def test_interpolate_target_units():
+    data1 = pd.DataFrame({
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5],
+            'Phlargen (mV)': [5, 4, 2, 4, 5, 6],
+            })
+    data2 = pd.DataFrame({
+            'Time (ms)': [0, 0.6, 1.2, 1.8, 2.4, 3.0, 3.6, 4.2, 4.8, 5.4],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]})
+    interpolated_desired = pd.DataFrame({
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Current (nA)': [
+            0,
+            0.16666666666666669,
+            0.33333333333333337,
+            0.5,
+            0.6666666666666666,
+            0.8333333333333335],
+            'Phlargen (mV)': [5, 4, 2, 4, 5, 6],
+            })
+    interpolated_actual = interpolate(data1, data2,
+            column_units=ureg.ms, target_units=ureg.nA)
+    assert_frame_equal(interpolated_actual, interpolated_desired)
+
+def test_normalize_target_units():
+    data1 = pd.DataFrame({
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5],
+            'Phlargen (kV)': 1 + np.array([0, 0.1, 0.2, 0.3, 0.4, 0.5])
+            })
+    data2 = pd.DataFrame({
+            'Time (ms)': [0, 0.6, 1.2, 1.8, 2.4, 3.0, 3.6, 4.2, 4.8, 5.4],
+            'Current (nA)': [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+            'Phlargen (kV)': 1 + np.array([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+            })
+    multiplied_data_desired =  pd.DataFrame({
+            'Time (ms)': [0, 1, 2, 3, 4, 5],
+            'Phlargen (kV)': 1 + np.array([0, 0.1, 0.2, 0.3, 0.4, 0.5]),
+            'power (nA ** 2)': [
+            0,
+            0.016666666666666669,
+            0.06666666666666668,
+            0.15,
+            0.26666666666666666,
+            0.41666666666666674],
+            })
+    multiplied_data_actual = normalize_pandas(data1, data2,
+            target_units=ureg.nA)
+    assert_frame_equal(multiplied_data_actual, multiplied_data_desired)

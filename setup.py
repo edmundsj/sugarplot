@@ -42,6 +42,7 @@ with open("README.md", "r") as fh:
                 'pint>=0.16.0',
                 'spectralpy',
                 'sciparse',
+                'liapy',
 		],
 	license="MIT",
 	)
