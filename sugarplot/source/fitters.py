@@ -16,12 +16,22 @@ def weibull(x, beta=1, x0=1):
     """
     return 1 - np.exp(-np.power(x/x0, beta))
 
+def transformed_weibull(x, beta, x0):
+    """
+    - ln (1 - F) of weibull distribution for curve-fitting
+    """
+    return np.power(x/x0, beta)
+
 def fit_weibull(data):
     """
     Fits a dataset to a weibull distribution by computing the CDF of the dataset, manipulating it appropriately, and fitting to it.
 
     :param data: 1-dimensional array-like data to fit to. i.e. breakdown field or breakdown charge
     """
+    if isinstance(data, pd.DataFrame):
+        data = np.array(data.iloc[:,-1])
+
+    data = np.sort(data)
     # Correct the CDF for finite size
     new_data = np.append(data, data[-1])
 
@@ -31,8 +41,11 @@ def fit_weibull(data):
 
     data_cdf = np.transpose(np.array(data_cdf))
     data_cdf_unbiased = data_cdf[:,:-1]
-    fit_params, pcov = curve_fit(
-            weibull, data_cdf_unbiased[0], data_cdf_unbiased[1])
+    failure_quantity = data_cdf_unbiased[0]
+    cdf = data_cdf_unbiased[1]
+    cdf_transformed = - np.log(1 - cdf)
+    fit_params, pcov = curve_fit(transformed_weibull, failure_quantity, cdf_transformed)
+    print(f'Fit data to beta: {fit_params[0]}: x0: {fit_params[1]}')
 
     return (fit_params, pcov, data_cdf_unbiased)
 

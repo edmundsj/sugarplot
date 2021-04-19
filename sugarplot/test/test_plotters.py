@@ -145,17 +145,17 @@ def test_power_spectrum_plot_psd():
     assert_figures_equal(fig_actual, desired_fig)
 
 def test_plot_weibull():
-    test_data = np.array([0.03112801, 0.08555936, 0.15152679, 0.22351831, 0.2978115 ])
-    test_cdf = np.array([1/6, 2/6, 3/6, 4/6, 5/6])
-    beta_desired = 1.0765117953238197
-    x0_desired = 0.1960321525466744
-    weibull_data = weibull(test_data, beta=beta_desired, x0=x0_desired)
-    fig_actual, ax_actual = plot_weibull(test_data, subplot_kw={'xlabel': 'mC/cm^2'})
+    beta_desired = beta = 2
+    x0_desired = x0 = 2
+    weibull_cdf = np.array([0.2, 0.4, 0.6, 0.8])
+    weibull_xval = np.array([0.9447614541548776, 1.4294413227075684, 1.9144615241619822, 2.5372724823590396])
+
+    fig_actual, ax_actual = plot_weibull(weibull_xval, subplot_kw={'xlabel': 'mC/cm^2'})
 
     fig_desired = Figure()
     ax_desired = fig_desired.subplots()
-    ax_desired.scatter(test_data, -np.log(1 - test_cdf))
-    ax_desired.plot(test_data, -np.log(1 - weibull_data), linestyle='dashed')
+    ax_desired.scatter(weibull_xval, -np.log(1 - weibull_cdf))
+    ax_desired.plot(weibull_xval, -np.log(1 - weibull_cdf), linestyle='dashed')
     ax_desired.set_xscale('log')
     ax_desired.set_yscale('log')
     ax_desired.set_xlabel('mC/cm^2')

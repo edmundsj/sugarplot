@@ -15,14 +15,35 @@ def test_weibull():
     value_desired = 1 - np.e ** -4
     assert_equal(value_actual, value_desired)
 
-def test_fit_weibull():
-    beta_desired = 1.0765117953238197
-    x0_desired = 0.1960321525466744
-    weibull_xval = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
-    test_data = np.array([0.03112801, 0.08555936, 0.15152679, 0.22351831, 0.2978115 ])
+def test_fit_weibull_simple():
+    beta_desired = beta = 2
+    x0_desired = x0 = 2
+    weibull_cdf = np.array([0.2, 0.4, 0.6, 0.8])
+    weibull_xval = np.array([0.9447614541548776, 1.4294413227075684, 1.9144615241619822, 2.5372724823590396])
 
-    fit_params, pcov, cdf = fit_weibull(test_data)
+    fit_params, pcov, cdf = fit_weibull(weibull_xval)
     beta_actual, x0_actual = fit_params[0], fit_params[1]
+    assert_equal(beta_actual, beta_desired)
+    assert_equal(x0_actual, x0_desired)
+
+def test_fit_weibull_real_data():
+    xdata = np.array([ 35.223483, 66.50118585, 112.539044, 123.57383,
+       125.52207671])
+    ydata = np.array([0.16666667, 0.33333333, 0.5, 0.66666667, 0.83333333])
+    fit_params, pcov, cdf = fit_weibull(xdata)
+    beta_actual, x0_actual = fit_params[0], fit_params[1]
+    beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
+    assert_equal(beta_actual, beta_desired)
+    assert_equal(x0_actual, x0_desired)
+
+def test_fit_weibull_pandas():
+    data = pd.DataFrame({
+            'random': [1, 2, 3, 4, 5],
+            'Qbd': np.array([ 35.223483, 66.50118585, 112.539044, 123.57383, 125.52207671])})
+    ydata = np.array([0.16666667, 0.33333333, 0.5, 0.66666667, 0.83333333])
+    fit_params, pcov, cdf = fit_weibull(data)
+    beta_actual, x0_actual = fit_params[0], fit_params[1]
+    beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
     assert_equal(beta_actual, beta_desired)
     assert_equal(x0_actual, x0_desired)
 

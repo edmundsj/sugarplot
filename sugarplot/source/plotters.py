@@ -231,9 +231,7 @@ def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
     """
     if isinstance(data, pd.DataFrame):
         subplot_kw = dict(subplot_kw, xlabel=data.columns[-1])
-        data = np.array(data.iloc[:,-1])
 
-    data = np.sort(data)
     subplot_kw = dict(subplot_kw, xscale='log', yscale='log',
             ylabel='-ln(1-F)')
     fit_params, pcov, cdf = fit_weibull(data)
@@ -272,6 +270,16 @@ def plot_lia(data, n_points=101, fit=True,
             theory_func=theory_func, theory_kw=theory_kw,
             line_kw=line_kw, subplot_kw=subplot_kw,
             plot_type=plot_type)
+
+def impedance_plotter(
+        data, fig=None, ax=None,
+        theory_func=None, theory_kw={}, theory_data=None,
+        line_kw={}, subplot_kw={}):
+    """
+    Plots the magnitude / phase of a set of impedance data.
+    """
+    raise NotImplementedError
+    return fig, ax
 
 def show_figure(fig):
     """
