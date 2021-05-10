@@ -73,12 +73,19 @@ def default_plot_pandas(data, fig=None, ax=None,
 def default_plot_numpy(x_data, y_data, fig=None, ax=None,
         theory_func=None, theory_kw={},
         theory_x_data=None, theory_y_data=None,
-        subplot_kw={}, line_kw={}, plot_type='line'):
+        subplot_kw={}, line_kw={}, theory_name='Theory',
+        plot_type='line'):
 
-    if not fig:
+    if fig is None:
         fig = Figure()
-    if not ax:
-        ax = fig.subplots(subplot_kw=subplot_kw)
+    if ax is None:
+        if len(fig.axes) == 0:
+            ax = fig.subplots(subplot_kw=subplot_kw)
+        elif len(fig.axes) >= 1:
+            ax = fig.axes[0]
+    if subplot_kw['xlabel'] == ax.get_xlabel() and \
+        subplot_kw['ylabel'] != ax.get_ylabel():
+        ax = ax.twinx()
 
     if plot_type == 'line':
         ax.plot(x_data, y_data, **line_kw)
@@ -91,9 +98,9 @@ def default_plot_numpy(x_data, y_data, fig=None, ax=None,
         ax.plot(x_data, theory_func(x_data, **theory_kw),
            linestyle='dashed', **line_kw)
         if plot_type == 'line':
-            ax.legend(['Measured', 'Theory'])
+            ax.legend(['Measured', theory_name])
         else:
-            ax.legend(['Theory', 'Measured'])
+            ax.legend([theory_name, 'Measured'])
 
     if theory_x_data is not None and theory_y_data is not None:
         ax.plot(theory_x_data, theory_y_data,
@@ -218,7 +225,7 @@ def power_spectrum_plot_pandas(
     return fig, ax
 
 def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
-        theory_func=None, theory_kw=None, theory_data=None):
+        theory_func=None, theory_kw=None, theory_data=None, theory_name='Fit'):
     """
     Plots a dataset to the best-fit Weibull distribution
 
@@ -231,6 +238,10 @@ def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
     """
     if isinstance(data, pd.DataFrame):
         subplot_kw = dict(subplot_kw, xlabel=data.columns[-1])
+        x_data = np.array(data.iloc[:,-1])
+    else:
+        x_data = data
+    x_data = np.sort(x_data)
 
     subplot_kw = dict(subplot_kw, xscale='log', yscale='log',
             ylabel='-ln(1-F)')
@@ -240,13 +251,12 @@ def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
     def theory_func(x, **kwargs):
         return -np.log(1 - weibull(x, **kwargs))
 
-    x_data = data
     y_data = -np.log(1 - cdf[1])
 
     fig, ax = default_plot_numpy(x_data, y_data,
             fig=fig, ax=ax, theory_func=theory_func,
             theory_kw=weibull_kw, subplot_kw=subplot_kw,
-            line_kw=line_kw, plot_type='scatter')
+            line_kw=line_kw, plot_type='scatter', theory_name=theory_name)
     return fig, ax
 
 def plot_lia(data, n_points=101, fit=True,

@@ -89,6 +89,7 @@ def assert_figures_equal(actual_fig, desired_fig, atol=1e-15, rtol=1e-10, skip=[
         skip = [skip]
     actual_axes = actual_fig.axes
     desired_axes = desired_fig.axes
+    assert_equal(len(actual_axes), len(desired_axes), err_msg='Figures have differing number of axes')
     for actual_ax, desired_ax in zip_longest(actual_axes, desired_axes):
         assert_axes_equal(
                 actual_ax, desired_ax, atol=atol, rtol=rtol, skip=skip)

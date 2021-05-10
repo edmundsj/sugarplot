@@ -28,6 +28,27 @@ def test_plot_pandas_default(data):
     actual_fig, actual_ax = default_plotter(data['data'])
     assert_figures_equal(actual_fig, desired_fig)
 
+def test_plot_pandas_twinx(data):
+    """
+    Tests that we can generate a plot with multiple axes when we pass in different y-valued data.
+    """
+    second_data = data['data'].copy()
+    second_data['Frequency (Hz)'] *= 2
+    second_data.rename(columns={'Frequency (Hz)': 'Frequency (kHz)'},
+            inplace=True)
+
+    default_kw = {'xlabel': data['xlabel'], 'ylabel': data['ylabel']}
+    desired_fig = Figure()
+    desired_ax = desired_fig.subplots(subplot_kw=default_kw)
+    desired_ax.plot(data['xdata'], data['ydata'])
+    new_ax = desired_ax.twinx()
+    new_ax.plot(second_data['Time (ms)'], second_data['Frequency (kHz)'])
+
+    actual_fig, ax = default_plotter(data['data'])
+    actual_fig, _ = default_plotter(second_data, fig=actual_fig)
+    breakpoint()
+    assert_figures_equal(actual_fig, desired_fig)
+
 def test_plot_pandas_log(data):
     desired_fig = Figure()
     log_kw= {

@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter, NullFormatter, FuncFormatter
 # TODO: figure out how to adjust axes so tht we can plot things even when we have y-labels like 0.0001 to avoid getting stuff cut off
 
 # Change global settings of all plots generated in the future
-plt.rcParams['font.family'] = 'Avenir'
+plt.rcParams['font.family'] = 'Arial'
 plt.rcParams['font.size'] = 18
 plt.rcParams['axes.linewidth'] = 2
 cmap = plt.get_cmap("tab10")
@@ -22,8 +23,14 @@ def prettifyPlot(ax, fig=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
+    formatter = ScalarFormatter()
+    formatter.set_scientific(False)
+    ax.xaxis.set_major_formatter(formatter)
+#ax.xaxis.set_minor_formatter(formatter)
+
     if fig != None:
-        fig.subplots_adjust(bottom=0.15)
-        fig.subplots_adjust(left=0.17)
+        fig.set_tight_layout(True)
+        #fig.subplots_adjust(bottom=0.15)
+        #fig.subplots_adjust(left=0.17)
 
 #plt.tight_layout()
