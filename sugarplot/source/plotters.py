@@ -12,7 +12,8 @@ from warnings import warn
 
 def default_plotter(data, fig=None, ax=None, ydata=None,
         theory_func=None, theory_kw={}, theory_data=None,
-        line_kw={}, subplot_kw={}, plot_type='line'):
+        line_kw={}, subplot_kw={}, plot_type='line',
+        theory_name='Theory'):
     """
     Default plotter which handles plotting pandas DataFrames, numpy arrays, and regular ol data.
 
@@ -26,19 +27,18 @@ def default_plotter(data, fig=None, ax=None, ydata=None,
     :param plot_type: Type of plot to generate. Current options are "line" and "scatter". Default is "line".
     """
     if isinstance(data, pd.DataFrame):
-        return default_plot_pandas(data, fig=fig, ax=ax,
+        return _default_plot_pandas(data, fig=fig, ax=ax,
                 theory_func=theory_func, theory_kw=theory_kw,
+                theory_name=theory_name,
                 theory_data=theory_data,
                 subplot_kw=subplot_kw, line_kw=line_kw,
                 plot_type=plot_type)
     else:
         raise ValueError(f'Plot not implemented for type {type(data)}. Only pandas.DataFrame is supported')
 
-def default_plot_pandas(data, fig=None, ax=None,
-        theory_func=None, theory_kw={}, theory_data=None,
-        subplot_kw={},line_kw={}, plot_type='line'):
+def _default_plot_pandas(data, theory_data=None, subplot_kw={}, **kwargs):
     """
-    Plots a pandas DataFrame, assuming the xdata is located in the first column and the ydata is located in the second column.
+    Plots a pandas DataFrame, assuming the xdata is located in the first column and the ydata is located in the second column. Not to be called directly.
 
     :param data: DataFrame to be plotted.
     :param fig: Figure to plot the data to
@@ -62,16 +62,14 @@ def default_plot_pandas(data, fig=None, ax=None,
     x_data = data.iloc[:, 0].values
     y_data = data.iloc[:, 1].values
 
-    fig, ax = default_plot_numpy(x_data, y_data,
-            fig=fig, ax=ax,
-            theory_func=theory_func, theory_kw=theory_kw,
+    fig, ax = _default_plot_numpy(x_data, y_data,
             theory_x_data=theory_x_data, theory_y_data=theory_y_data,
             subplot_kw=subplot_kw,
-            line_kw=line_kw, plot_type=plot_type)
+            **kwargs)
 
     return fig, ax
 
-def default_plot_numpy(x_data, y_data, fig=None, ax=None,
+def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
         theory_func=None, theory_kw={},
         theory_x_data=None, theory_y_data=None,
         subplot_kw={}, line_kw={}, theory_name='Theory',
@@ -119,8 +117,7 @@ def default_plot_numpy(x_data, y_data, fig=None, ax=None,
 
 def reflectance_plotter(
         photocurrent, reference_photocurrent, R_ref,
-        fig=None, ax=None, theory_func=None, theory_data=None,
-        theory_kw={}, subplot_kw={},line_kw={}):
+        subplot_kw={}, **kwargs):
     """
     Plotter which takes a photocurrent, normalizes it to a reference photocurrent, and multiplies that be the reference's known or theoretical reflectance.
 
@@ -139,39 +136,26 @@ def reflectance_plotter(
 
     R_norm = normalize_pandas(photocurrent, reference_photocurrent, np.divide, new_name='R')
     R_actual = normalize_pandas(R_norm, R_ref, np.multiply, new_name='R')
-    fig, ax = default_plotter(R_actual, fig=fig, ax=ax,
-            theory_func=theory_func, theory_kw=theory_kw,
-            theory_data=theory_data,
-            subplot_kw=subplot_kw, line_kw=line_kw)
+    fig, ax = default_plotter(R_actual,
+            subplot_kw=subplot_kw, **kwargs)
     return fig, ax
 
-def power_spectrum_plot(
-        power_spectrum, fig=None, ax=None,
-        ydata=None, theory_func=None, theory_kw={},theory_data=None,
-        line_kw={}, subplot_kw={}):
+def power_spectrum_plot(power_spectrum, **kwargs):
     """
     Plots a given power spectrum.
 
     :param power_spectrum: Power spectrum pandas DataFrame with Frequency in the first column and power in the second column
-    :param sampling_frequency: Sampling frequency the data was taken at
     :returns fig, ax: Figure, axes pair for power spectrum plot
 
     """
     if isinstance(power_spectrum, pd.DataFrame):
-        return power_spectrum_plot_pandas(
-            power_spectrum,
-            fig=fig, ax=ax,
-            theory_func=theory_func, theory_kw=theory_kw,
-            theory_data=theory_data,
-            line_kw=line_kw, subplot_kw=subplot_kw)
+        return _power_spectrum_plot_pandas(power_spectrum, **kwargs)
     else:
         raise NotImplementedError("Power spectrum plot not implemented" +
                                   f" for type {type(power_spectrum)}")
 
-def power_spectrum_plot_pandas(
-        power_spectrum, fig=None, ax=None,
-        theory_func=None, theory_kw={}, theory_data=None,
-        line_kw={}, subplot_kw={}):
+def _power_spectrum_plot_pandas(power_spectrum, subplot_kw={},
+        theory_data=None, **kwargs):
     """
     Implementation of powerSpectrumPlot for a pandas DataFrame. Plots a given power spectrum with units in the form Unit Name (unit type), i.e. Photocurrent (mA).
 
@@ -217,24 +201,17 @@ def power_spectrum_plot_pandas(
         theory_x_data = None
         theory_y_data = None
 
-    fig, ax = default_plot_numpy(x_data, y_data,
-            fig=fig, ax=ax,
-            theory_func=theory_func, theory_kw=theory_kw,
+    fig, ax = _default_plot_numpy(x_data, y_data,
             theory_x_data=theory_x_data, theory_y_data=theory_y_data,
-            subplot_kw=subplot_kw,
-            line_kw=line_kw)
+            subplot_kw=subplot_kw, **kwargs)
     return fig, ax
 
-def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
-        theory_func=None, theory_kw=None, theory_data=None, theory_name='Fit'):
+def plot_weibull(data, subplot_kw={}, theory_name='Fit',
+        plot_type='scatter', **kwargs):
     """
     Plots a dataset to the best-fit Weibull distribution
 
     :param data: 1-D array-like data to be plotted
-    :param fig: (optional) Figure to plot the data to
-    :param ax: (optional) axes to plot the data to
-    :param line_kw: Keyword arguments to pass into ax.plot()
-    :param subplot_kw: Keyword arguments to pass into fig.subplots()
 
     """
     if isinstance(data, pd.DataFrame):
@@ -254,10 +231,11 @@ def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
 
     y_data = -np.log(1 - cdf[1])
 
-    fig, ax = default_plot_numpy(x_data, y_data,
-            fig=fig, ax=ax, theory_func=theory_func,
+    fig, ax = _default_plot_numpy(x_data, y_data,
+            theory_func=theory_func,
             theory_kw=weibull_kw, subplot_kw=subplot_kw,
-            line_kw=line_kw, plot_type='scatter', theory_name=theory_name)
+            theory_name=theory_name, plot_type=plot_type,
+            **kwargs)
     return fig, ax
 
 def plot_lia(data, n_points=101, fit=True, **kwargs):
