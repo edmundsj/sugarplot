@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from numpy.testing import assert_equal
 
-from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, plot_lia, show_figure
+from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, plot_lia, show_figure, plot_fit
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -13,6 +13,17 @@ def data():
     ydata = np.array([1, 1/2, 1/3])
     xlabel = 'Time (ms)'
     ylabel = 'Frequency (Hz)'
+    data = pd.DataFrame({
+        xlabel: xdata, ylabel: ydata})
+    return {'xdata': xdata, 'ydata': ydata, 'xlabel': xlabel,
+        'ylabel': ylabel, 'data': data}
+
+@pytest.fixture
+def linear_data():
+    xdata = np.array([1, 2, 3])
+    ydata = np.array([1, 2, 3])
+    xlabel = 'Time (ms)'
+    ylabel = 'Error (%)'
     data = pd.DataFrame({
         xlabel: xdata, ylabel: ydata})
     return {'xdata': xdata, 'ydata': ydata, 'xlabel': xlabel,
@@ -46,7 +57,6 @@ def test_plot_pandas_twinx(data):
 
     actual_fig, ax = default_plotter(data['data'])
     actual_fig, _ = default_plotter(second_data, fig=actual_fig)
-    breakpoint()
     assert_figures_equal(actual_fig, desired_fig)
 
 def test_plot_pandas_log(data):
@@ -210,5 +220,37 @@ def test_plot_lia_nofit(lia_data):
     ax_desired.scatter(phases_desired, fits_desired)
     ax_desired.set_xlabel('Phase (rad)')
     ax_desired.set_ylabel('val')
+
+    assert_figures_equal(fig_actual, fig_desired, atol=1e-10)
+
+def test_plot_lia_nofit(lia_data):
+    fig_actual, ax_actual = plot_lia(lia_data, n_points=5, fit=False)
+
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(phases_desired, fits_desired)
+    ax_desired.set_xlabel('Phase (rad)')
+    ax_desired.set_ylabel('val')
+
+    assert_figures_equal(fig_actual, fig_desired, atol=1e-10)
+
+def test_plot_fit_linear(linear_data):
+    def linear_func(x, a, b):
+        return a + b * x
+
+    fig_actual, ax_actual = plot_fit(linear_data['data'], linear_func)
+
+    phases_desired = np.pi*np.array([-1, -1/2, 0, 1/2, 1])
+    fits_desired = 1 / np.sqrt(2) * np.array([0, -1, 0, 1, 0])
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(linear_data['xdata'], linear_data['ydata'])
+    ax_desired.set_xlabel(linear_data['xlabel'])
+    ax_desired.set_ylabel(linear_data['ylabel'])
+    ax_desired.plot(linear_data['xdata'], linear_data['ydata'], linestyle='dashed')
 
     assert_figures_equal(fig_actual, fig_desired, atol=1e-10)

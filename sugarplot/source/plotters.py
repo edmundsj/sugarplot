@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 import sys, pathlib
 from sugarplot import normalize_pandas, prettifyPlot, ureg, plt, weibull, fit_weibull, fit_lia
 from sciparse import to_standard_quantity, title_to_quantity
+from scipy.optimize import curve_fit
 import pandas as pd
 import numpy as np
 from warnings import warn
@@ -259,9 +260,7 @@ def plot_weibull(data, fig=None, ax=None, line_kw={}, subplot_kw={},
             line_kw=line_kw, plot_type='scatter', theory_name=theory_name)
     return fig, ax
 
-def plot_lia(data, n_points=101, fit=True,
-        theory_func=None, theory_kw={}, theory_data=None,
-        line_kw={}, subplot_kw={}, plot_type='scatter'):
+def plot_lia(data, n_points=101, fit=True, **kwargs):
     """
     Plots a cosine-fitted curve to the phase delay used in a lock-in amplifier - used to find the exact offset phase given a known sequence of synchronization pulses.
 
@@ -272,19 +271,29 @@ def plot_lia(data, n_points=101, fit=True,
     if fit:
         def theory_func(x, a=1, phase_delay=np.pi):
             return a * np.cos(x - phase_delay)
+        theory_kw = {'a': params[0], 'phase_delay': params[1]}
     else:
         theory_func = None
-    theory_kw = {'a': params[0], 'phase_delay': params[1]}
+        theory_kw={}
     return default_plotter(
             fitted_data,
             theory_func=theory_func, theory_kw=theory_kw,
-            line_kw=line_kw, subplot_kw=subplot_kw,
-            plot_type=plot_type)
+            plot_type='scatter', **kwargs)
 
-def impedance_plotter(
-        data, fig=None, ax=None,
-        theory_func=None, theory_kw={}, theory_data=None,
-        line_kw={}, subplot_kw={}):
+def plot_fit(data, fit_func, **kwargs):
+    xdata = data.iloc[:,0]
+    ydata = data.iloc[:,1]
+    params, pcov = curve_fit(fit_func, xdata, ydata)
+
+    def theory_func(x):
+        return fit_func(x, *params)
+
+    return default_plotter(
+            data,
+            theory_func=theory_func,
+            plot_type='scatter', **kwargs)
+
+def impedance_plotter(data, fig=None, ax=None, **kwargs):
     """
     Plots the magnitude / phase of a set of impedance data.
     """

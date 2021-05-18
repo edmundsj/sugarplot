@@ -1,12 +1,11 @@
-import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter, NullFormatter, FuncFormatter
-# TODO: figure out how to adjust axes so tht we can plot things even when we have y-labels like 0.0001 to avoid getting stuff cut off
+from sugarplot import cmap, plt
 
 # Change global settings of all plots generated in the future
 plt.rcParams['font.family'] = 'Arial'
 plt.rcParams['font.size'] = 18
 plt.rcParams['axes.linewidth'] = 2
-cmap = plt.get_cmap("tab10")
+plt.rcParams['axes.formatter.useoffset'] = False
 
 def prettifyPlot(ax, fig=None):
     #for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
