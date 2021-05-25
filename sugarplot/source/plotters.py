@@ -3,8 +3,9 @@ Contains plotters for various types of datasets which require special plotting r
 """
 from matplotlib.figure import Figure
 import sys, pathlib
-from sugarplot import normalize_pandas, prettifyPlot, ureg, plt, weibull, fit_weibull, fit_lia
-from sciparse import to_standard_quantity, title_to_quantity
+from sugarplot import normalize_pandas, prettifyPlot, ureg, plt, weibull, fit_weibull, \
+         fit_lia, fit_impedance, cmap
+from sciparse import to_standard_quantity, title_to_quantity, column_from_unit, cname_from_unit
 from scipy.optimize import curve_fit
 import pandas as pd
 import numpy as np
@@ -13,7 +14,7 @@ from warnings import warn
 def default_plotter(data, fig=None, ax=None, ydata=None,
         theory_func=None, theory_kw={}, theory_data=None,
         line_kw={}, subplot_kw={}, plot_type='line',
-        theory_name='Theory'):
+        theory_name='Theory', **kwargs):
     """
     Default plotter which handles plotting pandas DataFrames, numpy arrays, and regular ol data.
 
@@ -85,6 +86,16 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
     if subplot_kw['xlabel'] == ax.get_xlabel() and \
         subplot_kw['ylabel'] != ax.get_ylabel():
         ax = ax.twinx()
+        twinned=True
+        if 'xlabel' in subplot_kw:
+            ax.set_xlabel(subplot_kw['xlabel'])
+        if 'ylabel' in subplot_kw:
+            ax.set_ylabel(subplot_kw['ylabel'])
+        if 'xscale' in subplot_kw:
+            ax.set_xscale(subplot_kw['xscale'])
+        if 'yscale' in subplot_kw:
+            ax.set_xscale(subplot_kw['yscale'])
+        line_kw = dict(color=cmap(1), **line_kw)
 
     if plot_type == 'line':
         ax.plot(x_data, y_data, **line_kw)
@@ -105,9 +116,9 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
         ax.plot(theory_x_data, theory_y_data,
            linestyle='dashed', **line_kw)
         if plot_type == 'line':
-            ax.legend(['Measured', 'Theory'])
+            ax.legend(['Measured', theory_name])
         else:
-            ax.legend(['Theory', 'Measured'])
+            ax.legend([theory_name, 'Measured'])
         if 'xlim' not in subplot_kw:
             xlim_lower = min(x_data) - abs(min(x_data))*0.1
             xlim_higher = max(x_data) + abs(max(x_data))*0.1
@@ -262,6 +273,7 @@ def plot_fit(data, fit_func, **kwargs):
     xdata = data.iloc[:,0]
     ydata = data.iloc[:,1]
     params, pcov = curve_fit(fit_func, xdata, ydata)
+    print(f"Fit params: {params}")
 
     def theory_func(x):
         return fit_func(x, *params)
@@ -271,12 +283,58 @@ def plot_fit(data, fit_func, **kwargs):
             theory_func=theory_func,
             plot_type='scatter', **kwargs)
 
-def impedance_plotter(data, fig=None, ax=None, **kwargs):
+def plot_impedance(data, fit=True,
+        model='rc', model_config='series', **kwargs):
     """
     Plots the magnitude / phase of a set of impedance data.
+
+    :param fit: Whether to attempt to fit an impedance model to the data
+    :param model: Real/reactive model - options are "rc"
+    :param model_config: Model configuration, either "series" or "parallel"
     """
-    raise NotImplementedError
+# The challenge here is that we need to plot two things with the same x axis and different y axes: the magnitude and phase data. 
+
+    if fit:
+        _, _, impedance_func = fit_impedance(data)
+        # This needs to return a functional form for the impedance vs. frequency in addition to the relevant parameters, as it's not clear
+        freq_data = column_from_unit(data, ureg.Hz)
+        min_log = np.log10(freq_data.min().to(ureg.Hz).m)
+        max_log = np.log10(freq_data.max().to(ureg.Hz).m)
+        freq_theory_data = np.logspace(min_log, max_log, 100)
+        impedance_theory_data = impedance_func(freq_theory_data)
+        mag_theory_data = abs(impedance_theory_data)
+        phase_theory_data = np.angle(impedance_theory_data)*180/np.pi
+        theory_data = pd.DataFrame({
+                'Frequency (Hz)': freq_theory_data,
+                'Z (ohm)': mag_theory_data,
+                'Phase (deg)': phase_theory_data
+                })
+
+    else:
+        theory_data = None
+
+    subplot_kw = {'xscale': 'log', 'yscale': 'log'}
+    phase_data = column_from_unit(data, ureg.rad).to(ureg.deg).m
+    phase_name = cname_from_unit(data, ureg.rad)
+    data_to_plot = data.rename(columns={phase_name: 'Phase (deg)'})
+    data_to_plot['Phase (deg)'] = phase_data
+
+    fig, ax = default_plotter(
+            data_to_plot.iloc[:,[0,1]],
+            theory_data=theory_data.iloc[:,[0,1]],
+            plot_type='scatter', subplot_kw=subplot_kw,
+            theory_name='|Z| (Fit)', **kwargs)
+
+    fig, ax = default_plotter(
+            data_to_plot.iloc[:,[0,-1]],
+            fig=fig, ax=ax,
+            theory_data=theory_data.iloc[:,[0,-1]],
+            theory_name='Phase (Fit)',
+            plot_type='scatter', subplot_kw=subplot_kw, **kwargs)
+
+    prettifyPlot(fig=fig, ax=ax)
     return fig, ax
+
 
 def show_figure(fig):
     """

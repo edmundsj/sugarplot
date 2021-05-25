@@ -2,13 +2,29 @@
 Contains plotters for various types of datasets which require special plotting requirements.
 """
 from sugarplot import ureg
-from scipy.optimize import curve_fit
-from sciparse import to_standard_quantity, title_to_quantity
+from scipy.optimize import curve_fit, least_squares
+from sciparse import to_standard_quantity, title_to_quantity, column_from_unit
 from liapy import LIA
 import pandas as pd
 import numpy as np
 import pint
 from warnings import warn
+
+def curve_fit_multi(funcs, xdata, ydata, p0, **kwargs):
+    """
+    Fits a set of curves with common parameters and input data
+
+    :param funcs: Array-like list af functions where ydata[i] = f[i](xdata, p0)
+    :param xdata: input data
+    :param ydata: Array-like list of ydata. Should have same dimensionality as funcs.
+    :param p0: Initial guess for parameter set
+    """
+    def cost_function(p0):
+        residuals = np.array([func(xdata, *p0) - ydata for func, ydata in zip(funcs, ydata)]).flatten()
+        return residuals
+    result = least_squares(cost_function, p0, **kwargs)
+    params = result.x
+    return params
 
 def weibull(x, beta=1, x0=1):
     """
@@ -87,3 +103,50 @@ def fit_lia(data, n_points=101, fit=True):
             ylabel: all_values
             })
     return full_data, (amp, phase)
+
+def fit_impedance(data, model='rc', model_config='series', p0=(1, 1)):
+    """
+    Fits a two-element (resistive and reactive) impedance to an impedance spectrum
+
+    :param data: Pandas dataframe with magnitude/phase impedance data
+    :param model: Model to use. Options are "rc", "r", "c".
+    :param model_config: "series" or "parallel"
+    :param p0: Initial guesses in the form of (r0, c0) or in general (real, reactive)
+    """
+    # Convert R to kOhm internall and C to nF
+    magnitude_data = (column_from_unit(data, ureg.ohm).to(ureg.ohm)).m
+    phase_data = column_from_unit(data, ureg.rad).to(ureg.rad).m
+    frequency_data = column_from_unit(data, ureg.Hz).to(ureg.Hz).m
+
+    rscale = 1 # expected scale of resistances
+    cscale = 1e-9 # expected scale of capacitances
+
+    if model_config == 'series':
+        def magnitude_func(f, *rc):
+            return np.sqrt(np.square(rscale*rc[0]) + 1 / np.square((2*np.pi * f * (cscale*rc[1]))))
+        def phase_func(f, *rc):
+            return - np.arctan(1 / (2*np.pi * f * (rscale*rc[0]) * (cscale*rc[1])))
+
+    elif model_config == 'parallel':
+        def magnitude_func(f, *rc):
+            return rc[0] / np.sqrt(1 + np.square(2*np.pi * f * (rscale*rc[0]) * (cscale*rc[1]) ))
+        def phase_func(f, *rc):
+            return - np.arctan(2*np.pi*f*(rscale*rc[0])*(cscale*rc[1]))
+
+    else:
+        raise NotImplementedError
+
+    def magnitude_func_log(f, *rc):
+        return np.log(magnitude_func(f, *rc))
+
+    params = curve_fit_multi(
+       [magnitude_func_log, phase_func],
+       frequency_data, [np.log(magnitude_data), phase_data], p0,
+       bounds=[(0, 0), (np.inf, np.inf)])
+
+    impedance_function = lambda f: magnitude_func(f, *params) * \
+                         np.power(np.e, 1j*phase_func(f, *params))
+
+    r_true = params[0] * rscale
+    c_true = params[1] * cscale
+    return r_true, c_true, impedance_function

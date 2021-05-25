@@ -4,7 +4,10 @@ import pandas as pd
 import numpy as np
 from numpy.testing import assert_equal
 
-from sugarplot import normalize_pandas, default_plotter, reflectance_plotter, power_spectrum_plot, weibull, plot_weibull, plot_lia, show_figure, plot_fit
+from sugarplot import normalize_pandas, default_plotter, \
+         plot_impedance, reflectance_plotter, power_spectrum_plot, \
+         weibull, plot_weibull, plot_lia, show_figure, plot_fit, cmap, \
+         prettifyPlot
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -28,6 +31,16 @@ def linear_data():
         xlabel: xdata, ylabel: ydata})
     return {'xdata': xdata, 'ydata': ydata, 'xlabel': xlabel,
         'ylabel': ylabel, 'data': data}
+
+@pytest.fixture
+def impedance_data():
+    # 10kohm series with 1nF
+    data = pd.DataFrame({
+            'Frequency (Hz)': [100, 1000, 10000],
+            'Z (ohm)': [1.5915808465354326*1e6, 159468.7929050209, 18796.354942005233],
+            'Theta (rad)': [-1.564513224169163, -1.5080469618255752, -1.0098142106862729]
+            })
+    yield data
 
 def test_plot_pandas_default(data):
 
@@ -54,6 +67,8 @@ def test_plot_pandas_twinx(data):
     desired_ax.plot(data['xdata'], data['ydata'])
     new_ax = desired_ax.twinx()
     new_ax.plot(second_data['Time (ms)'], second_data['Frequency (kHz)'])
+    new_ax.set_xlabel('Time (ms)')
+    new_ax.set_ylabel('Frequency (kHz)')
 
     actual_fig, ax = default_plotter(data['data'])
     actual_fig, _ = default_plotter(second_data, fig=actual_fig)
@@ -254,3 +269,59 @@ def test_plot_fit_linear(linear_data):
     ax_desired.plot(linear_data['xdata'], linear_data['ydata'], linestyle='dashed')
 
     assert_figures_equal(fig_actual, fig_desired, atol=1e-10)
+
+def test_plot_impedance_nofit(impedance_data):
+    fig_actual, ax_actual = plot_impedance(impedance_data, fit=False)
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(impedance_data['Frequency (Hz)'], impedance_data['Z (ohm)'], color=cmap(0))
+    ax_desired.set_xscale('log')
+    ax_desired.set_yscale('log')
+    ax2 = ax_desired.twinx()
+    ax2.scatter(impedance_data['Frequency (Hz)'], impedance_data['Theta (rad)']*180/np.pi, color=cmap(1))
+    prettifyPlot(fig=fig_desired)
+    ax_desired.spines['right'].set_visible(True)
+
+    ax_desired.set_ylabel('Z (ohm)')
+    ax2.set_ylabel('Phase (deg)')
+    ax2.set_xlabel('Frequency (Hz)')
+    ax_desired.set_xlabel('Frequency (Hz)')
+
+    assert_figures_equal(fig_actual, fig_desired)
+
+def test_plot_impedance_fit(impedance_data):
+    fig_actual, ax_actual = plot_impedance(impedance_data, fit=True)
+
+    def impedance_func(f):
+        return 10000 + 1 / (1j* 2*np.pi * f * 1e-9)
+    theory_freqs = np.logspace(2, 4, 100)
+
+    theory_impedance = impedance_func(theory_freqs)
+    theory_phase = np.angle(theory_impedance) * 180/np.pi
+    theory_mag = np.abs(theory_impedance)
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(impedance_data['Frequency (Hz)'], impedance_data['Z (ohm)'], color=cmap(0))
+    ax_desired.set_xscale('log')
+    ax_desired.set_yscale('log')
+    ax_desired.set_xlabel('Frequency (Hz)')
+    ax_desired.plot(theory_freqs, theory_mag, color=cmap(0),
+            linestyle='dashed')
+
+    ax2 = ax_desired.twinx()
+    ax2.scatter(impedance_data['Frequency (Hz)'], impedance_data['Theta (rad)']*180/np.pi, color=cmap(1))
+    ax_desired.set_ylabel('Z (ohm)')
+    ax2.set_ylabel('Phase (deg)')
+    ax2.set_xlabel('Frequency (Hz)')
+    ax2.plot(theory_freqs, theory_phase, color=cmap(1),
+            linestyle='dashed')
+
+    prettifyPlot(fig=fig_desired)
+    ax_desired.spines['right'].set_visible(True)
+    show_figure(fig_actual)
+
+#show_figure(fig_actual)
+
+    assert_figures_equal(fig_actual, fig_desired, rtol=1e-8)

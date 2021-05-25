@@ -4,7 +4,75 @@ import numpy as np
 from numpy.testing import assert_equal, assert_allclose
 from pandas.testing import assert_frame_equal
 from liapy import LIA
-from sugarplot import weibull, fit_weibull, fit_lia
+from sugarplot import weibull, fit_weibull, fit_lia, fit_impedance
+from itertools import product
+
+@pytest.fixture
+def r_data():
+    data = pd.DataFrame({
+            'Frequency (Hz)': [1, 10, 100],
+            'Z (ohm)': [1, 1, 1],
+            'Theta (rad)': [0, 0, 0]})
+    yield data
+
+@pytest.fixture
+def c_data_1nF():
+    data = pd.DataFrame({
+            'Frequency (Hz)': [1, 10, 100],
+            'Z (ohm)': [1e9, 1e8, 1e7],
+            'Theta (rad)': [-np.pi/2, -np.pi/2, -np.pi/2]})
+    yield data
+
+@pytest.fixture
+def c_data_1F():
+    data = pd.DataFrame({
+            'Frequency (Hz)': [1, 10, 100],
+            'Z (ohm)': [1, 0.1, 0.01],
+            'Theta (rad)': [-np.pi/2, -np.pi/2, -np.pi/2]})
+    yield data
+
+rvals = [1, 10, 100, 1000, 10000, 100000]
+cvals = [1e-10, 1e-9, 1e-8, 1e-7]
+rcvals = [x for x in product(rvals, cvals)]
+@pytest.fixture(params=rcvals)
+def rc_data_series(request):
+    param = request.param
+    r = param[0]
+    c = param[1]
+    frequencies = np.array([100, 1000, 10*1e3])
+    magnitudes = np.abs(r + 1 / (1j*2*np.pi*frequencies*c))
+    phases = - np.arctan(1 / (2*np.pi * frequencies* r *c))
+    data = pd.DataFrame({
+            'Frequency (Hz)': frequencies,
+            'Z (ohm)': magnitudes,
+            'Theta (rad)': phases})
+    yield {'params': (r, c), 'data': data}
+
+rvals = [1e4, 1e5, 1e6, 1e7, 5e7]
+cvals = [1e-12, 1e-11, 1e-10, 1e-9, 1e-8]
+rcvals = [x for x in product(rvals, cvals)]
+@pytest.fixture(params=rcvals)
+def rc_data_parallel(request):
+    param = request.param
+    res = param[0]
+    cap = param[1]
+    frequencies = np.array([100, 1000, 10*1e3])
+    magnitudes = res / np.sqrt(1 + np.square(2*np.pi*frequencies*cap*res))
+    phases = - np.arctan(2*np.pi * frequencies*cap*res)
+    data = pd.DataFrame({
+            'Frequency (Hz)': frequencies,
+            'Z (ohm)': magnitudes,
+            'Theta (rad)': phases})
+    yield {'params': (res, cap), 'data': data}
+
+@pytest.fixture
+def rc_data_100_1nF():
+    data = pd.DataFrame({
+            'Frequency (Hz)': [100, 1000, 10000],
+            'Z (ohm)': [1.59155*1e6, 159155., 15915.8],
+            'Theta (rad)': [-1.5707334949419076, -1.570168008346862, -1.564513224169163]
+            })
+    yield data
 
 def test_weibull():
     value_actual = weibull(1, x0=1, beta=2)
@@ -96,3 +164,46 @@ def test_fit_lia_no_fit(lia_units, lia_data_units):
     data_actual, params_actual  = fit_lia(
             data=lia_data_units, n_points=n_points, fit=False)
     assert_equal(params_actual, (amp_desired, phase_desired))
+
+def test_fit_rc_r_only(r_data):
+    actual_res, actual_cap, _ = \
+         fit_impedance(r_data, model='rc',
+                 model_config='parallel', p0=(10, 1))
+    desired_res, desired_cap = [1, 0]
+    actual_params = np.array([actual_res, actual_cap])
+    desired_params = np.array([desired_res, desired_cap])
+
+    assert_allclose(actual_params, desired_params, atol=1e-10)
+
+
+def test_fit_rc_c_1nF(c_data_1nF):
+    actual_res, actual_cap, _ = \
+         fit_impedance(c_data_1nF, model='rc',
+                 model_config='parallel', p0=(1, 1))
+    desired_res, desired_cap = [1e13, 1e-9 / (2 * np.pi)]
+
+    assert_allclose(actual_cap, desired_cap, atol=1e-22)
+
+def test_fit_rc_series(rc_data_series):
+    data = rc_data_series['data']
+    actual_res, actual_cap, _ = \
+         fit_impedance(data, model='rc',
+                 model_config='series', p0=(1, 1))
+    desired_res, desired_cap = rc_data_series['params']
+
+    assert_allclose(actual_cap, desired_cap, rtol=1e-5)
+    assert_allclose(actual_res, desired_res, rtol=1e-5)
+
+def test_fit_rc_parallel(rc_data_parallel):
+    data = rc_data_parallel['data']
+    actual_res, actual_cap, impedance_func = \
+         fit_impedance(data, model='rc',
+                 model_config='parallel', p0=(1, 1))
+    desired_res, desired_cap = rc_data_parallel['params']
+    if abs(np.log10(2*np.pi*desired_res*desired_cap * 100)) > 5:
+        rtol = 1e-1
+    else:
+        rtol = 1e-4
+
+    assert_allclose(actual_cap, desired_cap, rtol=rtol)
+    assert_allclose(actual_res, desired_res, rtol=rtol)
