@@ -320,7 +320,6 @@ def test_plot_impedance_fit(impedance_data):
 
     prettifyPlot(fig=fig_desired)
     ax_desired.spines['right'].set_visible(True)
-    show_figure(fig_actual)
 
 #show_figure(fig_actual)
 

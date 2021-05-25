@@ -313,22 +313,29 @@ def plot_impedance(data, fit=True,
     else:
         theory_data = None
 
+    theory_to_plot = None
     subplot_kw = {'xscale': 'log', 'yscale': 'log'}
     phase_data = column_from_unit(data, ureg.rad).to(ureg.deg).m
     phase_name = cname_from_unit(data, ureg.rad)
     data_to_plot = data.rename(columns={phase_name: 'Phase (deg)'})
     data_to_plot['Phase (deg)'] = phase_data
 
+    if theory_data is not None:
+        theory_to_plot = theory_data.iloc[:,[0,1]]
+
     fig, ax = default_plotter(
             data_to_plot.iloc[:,[0,1]],
-            theory_data=theory_data.iloc[:,[0,1]],
+            theory_data=theory_to_plot,
             plot_type='scatter', subplot_kw=subplot_kw,
             theory_name='|Z| (Fit)', **kwargs)
+
+    if theory_data is not None:
+        theory_to_plot = theory_data.iloc[:,[0,-1]]
 
     fig, ax = default_plotter(
             data_to_plot.iloc[:,[0,-1]],
             fig=fig, ax=ax,
-            theory_data=theory_data.iloc[:,[0,-1]],
+            theory_data=theory_to_plot,
             theory_name='Phase (Fit)',
             plot_type='scatter', subplot_kw=subplot_kw, **kwargs)
 
