@@ -293,6 +293,22 @@ def plot_impedance(data, fit=True,
     :param model_config: Model configuration, either "series" or "parallel"
     """
 # The challenge here is that we need to plot two things with the same x axis and different y axes: the magnitude and phase data. 
+    if data.shape[1] == 2:
+        data_complex = True
+        z_data = column_from_unit(data, ureg.ohm).to(ureg.ohm).m
+        phase_data = np.angle(z_data)
+        magnitude_data = np.abs(z_data)
+        data_to_plot = pd.DataFrame({
+                'Frequency (Hz)': data.iloc[:,0],
+                '|Z| (ohm)': magnitude_data,
+                'Phase (deg)': phase_data * 180/np.pi
+                })
+    else:
+        data_complex = False
+        phase_data = column_from_unit(data, ureg.rad).to(ureg.deg).m
+        phase_name = cname_from_unit(data, ureg.rad)
+        data_to_plot = data.rename(columns={phase_name: 'Phase (deg)'})
+        data_to_plot['Phase (deg)'] = phase_data
 
     if fit:
         _, _, impedance_func = fit_impedance(data)
@@ -315,10 +331,6 @@ def plot_impedance(data, fit=True,
 
     theory_to_plot = None
     subplot_kw = {'xscale': 'log', 'yscale': 'log'}
-    phase_data = column_from_unit(data, ureg.rad).to(ureg.deg).m
-    phase_name = cname_from_unit(data, ureg.rad)
-    data_to_plot = data.rename(columns={phase_name: 'Phase (deg)'})
-    data_to_plot['Phase (deg)'] = phase_data
 
     if theory_data is not None:
         theory_to_plot = theory_data.iloc[:,[0,1]]

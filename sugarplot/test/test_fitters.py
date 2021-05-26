@@ -31,6 +31,18 @@ def c_data_1F():
             'Theta (rad)': [-np.pi/2, -np.pi/2, -np.pi/2]})
     yield data
 
+@pytest.fixture
+def rc_data_complex():
+    data = pd.DataFrame({
+            'Frequency (Hz)': [100, 1000, 10000],
+            'Z (ohm)': [
+                1000 - 1j*1.5915494309189536*1e6,
+                1000 - 1j*1.5915494309189536*1e5,
+                1000 - 1j*1.5915494309189536*1e4,
+            ]})
+    yield data
+
+
 rvals = [1, 10, 100, 1000, 10000, 100000]
 cvals = [1e-10, 1e-9, 1e-8, 1e-7]
 rcvals = [x for x in product(rvals, cvals)]
@@ -207,3 +219,12 @@ def test_fit_rc_parallel(rc_data_parallel):
 
     assert_allclose(actual_cap, desired_cap, rtol=rtol)
     assert_allclose(actual_res, desired_res, rtol=rtol)
+
+def test_fit_rc_series_complex(rc_data_complex):
+    actual_res, actual_cap, impedance_func = \
+         fit_impedance(rc_data_complex, model='rc',
+                 model_config='series', p0=(1, 1))
+    desired_res, desired_cap = 1000, 1e-9
+
+    assert_allclose(actual_cap, desired_cap, rtol=1e-6)
+    assert_allclose(actual_res, desired_res, rtol=1e-6)

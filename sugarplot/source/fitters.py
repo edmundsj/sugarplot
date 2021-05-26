@@ -114,9 +114,15 @@ def fit_impedance(data, model='rc', model_config='series', p0=(1, 1)):
     :param p0: Initial guesses in the form of (r0, c0) or in general (real, reactive)
     """
     # Convert R to kOhm internall and C to nF
-    magnitude_data = (column_from_unit(data, ureg.ohm).to(ureg.ohm)).m
-    phase_data = column_from_unit(data, ureg.rad).to(ureg.rad).m
     frequency_data = column_from_unit(data, ureg.Hz).to(ureg.Hz).m
+    if data.shape[1] == 2: # Assume our data is complex - it has to be.
+        z_data = column_from_unit(data, ureg.ohm).to(ureg.ohm).m
+        magnitude_data = abs(z_data)
+        phase_data = np.angle(z_data)
+    else:
+        magnitude_data = (column_from_unit(data, ureg.ohm).to(ureg.ohm)).m
+        phase_data = column_from_unit(data, ureg.rad).to(ureg.rad).m
+
 
     rscale = 1 # expected scale of resistances
     cscale = 1e-9 # expected scale of capacitances

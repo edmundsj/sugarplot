@@ -42,6 +42,18 @@ def impedance_data():
             })
     yield data
 
+@pytest.fixture
+def impedance_data_complex():
+    # 10kohm series with 1nF
+    data = pd.DataFrame({
+            'Frequency (Hz)': [100, 1000, 10000],
+            'Z (ohm)': [
+                1000 - 1j*1.5915494309189536*1e6,
+                1000 - 1j*1.5915494309189536*1e5,
+                1000 - 1j*1.5915494309189536*1e4,
+            ]
+            })
+    yield data
 def test_plot_pandas_default(data):
 
     default_kw = {'xlabel': data['xlabel'], 'ylabel': data['ylabel']}
@@ -324,3 +336,25 @@ def test_plot_impedance_fit(impedance_data):
 #show_figure(fig_actual)
 
     assert_figures_equal(fig_actual, fig_desired, rtol=1e-8)
+
+def test_plot_impedance_nofit_complex(impedance_data_complex):
+    fig_actual, ax_actual = plot_impedance(impedance_data_complex,
+            fit=False)
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.scatter(impedance_data_complex['Frequency (Hz)'],
+            np.abs(impedance_data_complex['Z (ohm)']), color=cmap(0))
+    ax_desired.set_xscale('log')
+    ax_desired.set_yscale('log')
+    ax2 = ax_desired.twinx()
+    ax2.scatter(impedance_data_complex['Frequency (Hz)'],
+            np.angle(impedance_data_complex['Z (ohm)'])*180/np.pi,
+            color=cmap(1))
+    prettifyPlot(fig=fig_desired)
+    ax_desired.spines['right'].set_visible(True)
+
+    ax_desired.set_ylabel('|Z| (ohm)')
+    ax2.set_ylabel('Phase (deg)')
+    ax2.set_xlabel('Frequency (Hz)')
+    ax_desired.set_xlabel('Frequency (Hz)')
