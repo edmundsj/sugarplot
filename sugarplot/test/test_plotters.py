@@ -6,8 +6,8 @@ from numpy.testing import assert_equal
 
 from sugarplot import normalize_pandas, default_plotter, \
          plot_impedance, reflectance_plotter, power_spectrum_plot, \
-         weibull, plot_weibull, plot_lia, show_figure, plot_fit, cmap, \
-         prettifyPlot
+         weibull, plot_weibull, plot_lia, show_figure, plot_fit, \
+         cmap, prettifyPlot
 from sugarplot import assert_figures_equal, assert_axes_equal, assert_line_equal
 
 @pytest.fixture
@@ -358,3 +358,21 @@ def test_plot_impedance_nofit_complex(impedance_data_complex):
     ax2.set_ylabel('Phase (deg)')
     ax2.set_xlabel('Frequency (Hz)')
     ax_desired.set_xlabel('Frequency (Hz)')
+    assert_figures_equal(fig_actual, fig_desired, rtol=1e-8)
+
+def test_plot_linear_fit(impedance_data_complex):
+    x_data  = np.array([0, 1, 2, 3, 4, 5])
+    y_data = np.array([0, 1, 2, 3, 4, 5])
+    def linear_fit(x, offset, slope):
+        return offset + x * slope
+
+    fig_actual, ax_actual = default_plotter(
+            x_data, y_data,
+            fit_func=linear_fit)
+
+    fig_desired = Figure()
+    ax_desired = fig_desired.subplots()
+    ax_desired.plot(x_data, y_data)
+    ax_desired.plot(x_data, y_data, linestyle='dashed')
+    assert_figures_equal(fig_actual, fig_desired,
+            rtol=1e-8, atol=1e-8)

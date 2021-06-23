@@ -11,15 +11,16 @@ import pandas as pd
 import numpy as np
 from warnings import warn
 
-def default_plotter(data, fig=None, ax=None, ydata=None,
-        theory_func=None, theory_kw={}, theory_data=None,
+def default_plotter(data, y_data=None, fig=None, ax=None,
+        theory_func=None, theory_args=(), theory_kw={},
+        theory_data=None, theory_y_data=None, fit_func=None,
         line_kw={}, subplot_kw={}, plot_type='line',
         theory_name='Theory', **kwargs):
     """
     Default plotter which handles plotting pandas DataFrames, numpy arrays, and regular ol data.
 
     :param data: pandas DataFrame or array-like xdata
-    :param ydata: array-like ydata
+    :param y_data: array-like ydata
     :param theory_func: Function to plot along with xdata
     :param theory_kw: Keyword arguments to pass into theory_func
     :param theory_data: Theoretical data with same x/y axes as data
@@ -30,14 +31,27 @@ def default_plotter(data, fig=None, ax=None, ydata=None,
     if isinstance(data, pd.DataFrame):
         return _default_plot_pandas(data, fig=fig, ax=ax,
                 theory_func=theory_func, theory_kw=theory_kw,
+                theory_args=theory_args,
                 theory_name=theory_name,
                 theory_data=theory_data,
                 subplot_kw=subplot_kw, line_kw=line_kw,
-                plot_type=plot_type)
+                plot_type=plot_type,
+                fit_func=fit_func)
+    elif isinstance(data, np.ndarray):
+        return _default_plot_numpy(data, y_data, fig=fig, ax=ax,
+                theory_func=theory_func, theory_kw=theory_kw,
+                theory_args=theory_args,
+                theory_name=theory_name,
+                theory_x_data=theory_data,
+                theory_y_data=theory_y_data,
+                subplot_kw=subplot_kw, line_kw=line_kw,
+                plot_type=plot_type,
+                fit_func=fit_func)
     else:
         raise ValueError(f'Plot not implemented for type {type(data)}. Only pandas.DataFrame is supported')
 
-def _default_plot_pandas(data, theory_data=None, subplot_kw={}, **kwargs):
+def _default_plot_pandas(data, theory_data=None,
+        subplot_kw={}, **kwargs):
     """
     Plots a pandas DataFrame, assuming the xdata is located in the first column and the ydata is located in the second column. Not to be called directly.
 
@@ -63,17 +77,20 @@ def _default_plot_pandas(data, theory_data=None, subplot_kw={}, **kwargs):
     x_data = data.iloc[:, 0].values
     y_data = data.iloc[:, 1].values
 
-    fig, ax = _default_plot_numpy(x_data, y_data,
-            theory_x_data=theory_x_data, theory_y_data=theory_y_data,
+    fig, ax = _default_plot_numpy(
+            x_data, y_data,
+            theory_x_data=theory_x_data,
+            theory_y_data=theory_y_data,
             subplot_kw=subplot_kw,
             **kwargs)
 
     return fig, ax
 
 def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
-        theory_func=None, theory_kw={},
+        theory_func=None, theory_args=(), theory_kw={},
         theory_x_data=None, theory_y_data=None,
         subplot_kw={}, line_kw={}, theory_name='Theory',
+        fit_func=None,
         plot_type='line'):
 
     if fig is None:
@@ -83,19 +100,21 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
             ax = fig.subplots(subplot_kw=subplot_kw)
         elif len(fig.axes) >= 1:
             ax = fig.axes[0]
-    if subplot_kw['xlabel'] == ax.get_xlabel() and \
-        subplot_kw['ylabel'] != ax.get_ylabel():
-        ax = ax.twinx()
-        twinned=True
-        if 'xlabel' in subplot_kw:
-            ax.set_xlabel(subplot_kw['xlabel'])
-        if 'ylabel' in subplot_kw:
-            ax.set_ylabel(subplot_kw['ylabel'])
-        if 'xscale' in subplot_kw:
-            ax.set_xscale(subplot_kw['xscale'])
-        if 'yscale' in subplot_kw:
-            ax.set_xscale(subplot_kw['yscale'])
-        line_kw = dict(color=cmap(1), **line_kw)
+    if 'xlabel' in subplot_kw:
+        if subplot_kw['xlabel'] == ax.get_xlabel() and \
+            subplot_kw['ylabel'] != ax.get_ylabel():
+            ax = ax.twinx()
+            twinned=True
+            if 'xlabel' in subplot_kw:
+                ax.set_xlabel(subplot_kw['xlabel'])
+            if 'ylabel' in subplot_kw:
+                ax.set_ylabel(subplot_kw['ylabel'])
+            if 'xscale' in subplot_kw:
+                ax.set_xscale(subplot_kw['xscale'])
+            if 'yscale' in subplot_kw:
+                ax.set_xscale(subplot_kw['yscale'])
+            line_kw = dict(color=cmap(1), **line_kw)
+
 
     if plot_type == 'line':
         ax.plot(x_data, y_data, **line_kw)
@@ -104,8 +123,13 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
     else:
         raise ValueError(f'Plot type {plot_type} is unavailable. Only "line" and "scatter" are implemented')
 
+    if fit_func is not None:
+        theory_args, pcov = curve_fit(fit_func, x_data, y_data)
+        theory_func = fit_func
+        print(f'Fit params: {theory_args}')
+
     if theory_func:
-        ax.plot(x_data, theory_func(x_data, **theory_kw),
+        ax.plot(x_data, theory_func(x_data, *theory_args, **theory_kw),
            linestyle='dashed', **line_kw)
         if plot_type == 'line':
             ax.legend(['Measured', theory_name])
@@ -124,6 +148,7 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
             xlim_higher = max(x_data) + abs(max(x_data))*0.1
             ax.set_xlim(xlim_lower, xlim_higher)
 
+    prettifyPlot(fig=fig)
     return fig, ax
 
 def reflectance_plotter(
@@ -335,21 +360,15 @@ def plot_impedance(data, fit=True,
     if theory_data is not None:
         theory_to_plot = theory_data.iloc[:,[0,1]]
 
-    fig, ax = default_plotter(
-            data_to_plot.iloc[:,[0,1]],
-            theory_data=theory_to_plot,
-            plot_type='scatter', subplot_kw=subplot_kw,
-            theory_name='|Z| (Fit)', **kwargs)
+    kwargs.update(subplot_kw=subplot_kw, theory_data=theory_to_plot,
+            theory_name='|Z| (Fit)', plot_type='scatter')
+    fig, ax = default_plotter(data_to_plot.iloc[:,[0,1]], **kwargs)
 
     if theory_data is not None:
         theory_to_plot = theory_data.iloc[:,[0,-1]]
-
-    fig, ax = default_plotter(
-            data_to_plot.iloc[:,[0,-1]],
-            fig=fig, ax=ax,
-            theory_data=theory_to_plot,
-            theory_name='Phase (Fit)',
-            plot_type='scatter', subplot_kw=subplot_kw, **kwargs)
+    kwargs.update(subplot_kw=subplot_kw, fig=fig, ax=ax, theory_data=theory_to_plot,
+            theory_name='Phase (Fit)', plot_type='scatter')
+    fig, ax = default_plotter(data_to_plot.iloc[:,[0,-1]], **kwargs)
 
     prettifyPlot(fig=fig, ax=ax)
     return fig, ax
