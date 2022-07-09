@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from numpy.testing import assert_equal, assert_allclose, assert_almost_equal
+from numpy.testing import assert_allclose, assert_almost_equal, assert_equal
 from pandas.testing import assert_frame_equal
 from liapy import LIA
 from sugarplot import weibull, fit_weibull, fit_lia, fit_impedance
@@ -89,11 +89,11 @@ def rc_data_100_1nF():
 def test_weibull():
     value_actual = weibull(1, x0=1, beta=2)
     value_desired = 1 - np.e ** -1
-    assert_equal(value_actual, value_desired)
+    assert_allclose(value_actual, value_desired)
 
     value_actual= weibull(1, x0=1/2, beta=2)
     value_desired = 1 - np.e ** -4
-    assert_equal(value_actual, value_desired)
+    assert_allclose(value_actual, value_desired)
 
 def test_fit_weibull_simple():
     beta_desired = beta = 2
@@ -103,8 +103,8 @@ def test_fit_weibull_simple():
 
     fit_params, pcov, cdf = fit_weibull(weibull_xval)
     beta_actual, x0_actual = fit_params[0], fit_params[1]
-    assert_equal(beta_actual, beta_desired)
-    assert_equal(x0_actual, x0_desired)
+    assert_allclose(beta_actual, beta_desired)
+    assert_allclose(x0_actual, x0_desired)
 
 def test_fit_weibull_real_data():
     xdata = np.array([ 35.223483, 66.50118585, 112.539044, 123.57383,
@@ -114,7 +114,7 @@ def test_fit_weibull_real_data():
     beta_actual, x0_actual = fit_params[0], fit_params[1]
     beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
     assert_allclose(beta_actual, beta_desired, atol=1e-4)
-    assert_equal(x0_actual, x0_desired)
+    assert_allclose(x0_actual, x0_desired)
 
 def test_fit_weibull_pandas():
     data = pd.DataFrame({
@@ -125,7 +125,7 @@ def test_fit_weibull_pandas():
     beta_actual, x0_actual = fit_params[0], fit_params[1]
     beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
     assert_allclose(beta_actual, beta_desired,  atol=1e-4)
-    assert_equal(x0_actual, x0_desired)
+    assert_allclose(x0_actual, x0_desired)
 
 def test_fit_lia_data(lia, lia_data):
     n_points = 5
