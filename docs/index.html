@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Welcome to sugarplot’s Documentation &mdash; Jordan Edmunds&#39; Ph.D.  documentation</title>
@@ -21,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -33,6 +34,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -146,11 +149,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-normalization">
+  <section id="module-normalization">
 <span id="welcome-to-sugarplot-s-documentation"></span><h1>Welcome to sugarplot’s Documentation<a class="headerlink" href="#module-normalization" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="normalization.interpolate">
-<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="n">column_units</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_units</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.interpolate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="normalization.interpolate">
+<span class="sig-prename descclassname"><span class="pre">normalization.</span></span><span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolates data2 into the locations of data1. Requires data1 and data2 have no less than two values. If data1 and data2 have more than two columns, this will use the first and last columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -167,8 +170,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="normalization.normalize_pandas">
-<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">normalize_pandas</code><span class="sig-paren">(</span><em class="sig-param">data1</em>, <em class="sig-param">data2</em>, <em class="sig-param">operation=&lt;ufunc 'multiply'&gt;</em>, <em class="sig-param">operation_args=()</em>, <em class="sig-param">operation_kwargs={}</em>, <em class="sig-param">new_name=''</em>, <em class="sig-param">column_units=None</em>, <em class="sig-param">target_units=None</em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_pandas" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="normalization.normalize_pandas">
+<span class="sig-prename descclassname"><span class="pre">normalization.</span></span><span class="sig-name descname"><span class="pre">normalize_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation=&lt;ufunc</span> <span class="pre">'multiply'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_args=()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_kwargs={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_name=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_units=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_units=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_pandas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs an operation on data1 and data2, interpolating data from
 data2 as needed, and applying the operation specified (can be any function that takes two numpy arrays). New data will have indices and units of data1.</p>
 <dl class="field-list simple">
@@ -189,8 +192,8 @@ data2 as needed, and applying the operation specified (can be any function that 
 </dd></dl>
 
 <dl class="py function">
-<dt id="normalization.normalize_reflectance">
-<code class="sig-prename descclassname">normalization.</code><code class="sig-name descname">normalize_reflectance</code><span class="sig-paren">(</span><em class="sig-param">photocurrent</em>, <em class="sig-param">reference_photocurrent</em>, <em class="sig-param">reference_reflectance</em>, <em class="sig-param">column_units=&lt;Unit('nanometer')&gt;</em>, <em class="sig-param">target_units=None</em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_reflectance" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="normalization.normalize_reflectance">
+<span class="sig-prename descclassname"><span class="pre">normalization.</span></span><span class="sig-name descname"><span class="pre">normalize_reflectance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_photocurrent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_reflectance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_units=&lt;Unit('nanometer')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_units=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#normalization.normalize_reflectance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a photocurrent spectra into a reflectance spectra using a reference photocurrent and known reference reflectance spectra.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -205,21 +208,21 @@ data2 as needed, and applying the operation specified (can be any function that 
 </dd></dl>
 
 <span class="target" id="module-prettify"></span><dl class="py function">
-<dt id="prettify.prettifyPlot">
-<code class="sig-prename descclassname">prettify.</code><code class="sig-name descname">prettifyPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#prettify.prettifyPlot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="prettify.prettifyPlot">
+<span class="sig-prename descclassname"><span class="pre">prettify.</span></span><span class="sig-name descname"><span class="pre">prettifyPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#prettify.prettifyPlot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <div class="toctree-wrapper compound">
 </div>
-</div>
-<div class="section" id="indices-and-tables">
+</section>
+<section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
            </div>
