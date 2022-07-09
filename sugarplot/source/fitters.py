@@ -113,7 +113,7 @@ def fit_impedance(data, model='rc', model_config='series', p0=(1, 1)):
     :param model_config: "series" or "parallel"
     :param p0: Initial guesses in the form of (r0, c0) or in general (real, reactive)
     """
-    # Convert R to kOhm internall and C to nF
+    # Convert R to kOhm internally and C to nF
     frequency_data = column_from_unit(data, ureg.Hz).to(ureg.Hz).m
     if data.shape[1] == 2: # Assume our data is complex - it has to be.
         z_data = column_from_unit(data, ureg.ohm).to(ureg.ohm).m

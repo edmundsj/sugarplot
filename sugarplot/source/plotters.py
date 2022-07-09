@@ -14,6 +14,7 @@ from warnings import warn
 def default_plotter(data, y_data=None, fig=None, ax=None,
         theory_func=None, theory_args=(), theory_kw={},
         theory_data=None, theory_y_data=None, fit_func=None,
+        fit_p0=None,
         line_kw={}, subplot_kw={}, plot_type='line',
         theory_name='Theory', **kwargs):
     """
@@ -36,7 +37,8 @@ def default_plotter(data, y_data=None, fig=None, ax=None,
                 theory_data=theory_data,
                 subplot_kw=subplot_kw, line_kw=line_kw,
                 plot_type=plot_type,
-                fit_func=fit_func)
+                fit_func=fit_func,
+                fit_p0=fit_p0)
     elif isinstance(data, np.ndarray):
         return _default_plot_numpy(data, y_data, fig=fig, ax=ax,
                 theory_func=theory_func, theory_kw=theory_kw,
@@ -46,7 +48,8 @@ def default_plotter(data, y_data=None, fig=None, ax=None,
                 theory_y_data=theory_y_data,
                 subplot_kw=subplot_kw, line_kw=line_kw,
                 plot_type=plot_type,
-                fit_func=fit_func)
+                fit_func=fit_func,
+                fit_p0=fit_p0)
     else:
         raise ValueError(f'Plot not implemented for type {type(data)}. Only pandas.DataFrame is supported')
 
@@ -77,6 +80,7 @@ def _default_plot_pandas(data, theory_data=None,
     x_data = data.iloc[:, 0].values
     y_data = data.iloc[:, 1].values
 
+
     fig, ax = _default_plot_numpy(
             x_data, y_data,
             theory_x_data=theory_x_data,
@@ -90,7 +94,7 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
         theory_func=None, theory_args=(), theory_kw={},
         theory_x_data=None, theory_y_data=None,
         subplot_kw={}, line_kw={}, theory_name='Theory',
-        fit_func=None,
+        fit_func=None, fit_p0=None,
         plot_type='line'):
 
     if fig is None:
@@ -109,12 +113,15 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
                 ax.set_xlabel(subplot_kw['xlabel'])
             if 'ylabel' in subplot_kw:
                 ax.set_ylabel(subplot_kw['ylabel'])
-            if 'xscale' in subplot_kw:
-                ax.set_xscale(subplot_kw['xscale'])
-            if 'yscale' in subplot_kw:
-                ax.set_xscale(subplot_kw['yscale'])
             line_kw = dict(color=cmap(1), **line_kw)
+        else:
+            ax.set_xlabel(subplot_kw['xlabel'])
+            ax.set_ylabel(subplot_kw['ylabel'])
 
+    if 'xscale' in subplot_kw:
+        ax.set_xscale(subplot_kw['xscale'])
+    if 'yscale' in subplot_kw:
+        ax.set_yscale(subplot_kw['yscale'])
 
     if plot_type == 'line':
         ax.plot(x_data, y_data, **line_kw)
@@ -124,13 +131,15 @@ def _default_plot_numpy(x_data, y_data, fig=None, ax=None,
         raise ValueError(f'Plot type {plot_type} is unavailable. Only "line" and "scatter" are implemented')
 
     if fit_func is not None:
-        theory_args, pcov = curve_fit(fit_func, x_data, y_data)
+        theory_args, pcov = curve_fit(fit_func, x_data, y_data,
+                p0=fit_p0)
         theory_func = fit_func
         print(f'Fit params: {theory_args}')
+        print(f'Fit pcov: {pcov}')
 
     if theory_func:
         ax.plot(x_data, theory_func(x_data, *theory_args, **theory_kw),
-           linestyle='dashed', **line_kw)
+           linestyle='dashed')
         if plot_type == 'line':
             ax.legend(['Measured', theory_name])
         else:
@@ -360,10 +369,13 @@ def plot_impedance(data, fit=True,
     if theory_data is not None:
         theory_to_plot = theory_data.iloc[:,[0,1]]
 
+    # Plot the magnitude data
     kwargs.update(subplot_kw=subplot_kw, theory_data=theory_to_plot,
             theory_name='|Z| (Fit)', plot_type='scatter')
     fig, ax = default_plotter(data_to_plot.iloc[:,[0,1]], **kwargs)
 
+    subplot_kw = {'xscale': 'log', 'yscale': 'linear'}
+    # Plot the phase data
     if theory_data is not None:
         theory_to_plot = theory_data.iloc[:,[0,-1]]
     kwargs.update(subplot_kw=subplot_kw, fig=fig, ax=ax, theory_data=theory_to_plot,
