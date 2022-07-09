@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from numpy.testing import assert_equal, assert_allclose
+from numpy.testing import assert_equal, assert_allclose, assert_almost_equal
 from pandas.testing import assert_frame_equal
 from liapy import LIA
 from sugarplot import weibull, fit_weibull, fit_lia, fit_impedance
@@ -113,7 +113,7 @@ def test_fit_weibull_real_data():
     fit_params, pcov, cdf = fit_weibull(xdata)
     beta_actual, x0_actual = fit_params[0], fit_params[1]
     beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
-    assert_equal(beta_actual, beta_desired)
+    assert_allclose(beta_actual, beta_desired, atol=1e-4)
     assert_equal(x0_actual, x0_desired)
 
 def test_fit_weibull_pandas():
@@ -124,7 +124,7 @@ def test_fit_weibull_pandas():
     fit_params, pcov, cdf = fit_weibull(data)
     beta_actual, x0_actual = fit_params[0], fit_params[1]
     beta_desired, x0_desired = 8.28563460099443, 118.86758906093989
-    assert_equal(beta_actual, beta_desired)
+    assert_allclose(beta_actual, beta_desired,  atol=1e-4)
     assert_equal(x0_actual, x0_desired)
 
 def test_fit_lia_data(lia, lia_data):
